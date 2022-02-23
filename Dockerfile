@@ -408,14 +408,13 @@ COPY . /build/
 RUN     cd /tmp/nvmpi_parts/ && \
         mv /build/jetson_multimedia_api /usr/src/ && \
         mv /build/nvmpi_parts/* /tmp/nvmpi_parts/ && \
+        mv /build/ffmpeg_nvmpi.patch /tmp/ffmpeg/ && \
         mkdir build && \
         cd /tmp/nvmpi_parts/build && \
-        cmake .. && \
+        cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" .. && \
         make -j4 && \
         make install && \
         ldconfig
-
-COPY ./ffmpeg_nvmpi.patch /tmp/ffmpeg/
 
 RUN   \
         DIR=/tmp/ffmpeg && mkdir -p ${DIR} && cd ${DIR} && \
@@ -453,7 +452,7 @@ RUN \
         --enable-small \
         --enable-version3 \
         --enable-libzmq \
-        --extra-libs=-ldl \
+        --extra-libs="-ldl -lnvmpi" \
         --prefix="${PREFIX}" \
         --enable-libopenjpeg \
         --enable-libkvazaar \
@@ -480,7 +479,7 @@ RUN \
 ## cleanup
 RUN \
         ldd ${PREFIX}/bin/ffmpeg | grep opt/ffmpeg | cut -d ' ' -f 3 | xargs -i cp {} /usr/local/lib/ && \
-        for lib in /usr/local/lib/*.so.*; do ln -s "${lib##*/}" "${lib%%.so.*}".so; done && \
+        for lib in /usr/local/lib/*.so.*; do ln -sf "${lib##*/}" "${lib%%.so.*}".so; done && \
         cp ${PREFIX}/bin/* /usr/local/bin/ && \
         cp -r ${PREFIX}/share/ffmpeg /usr/local/share/ && \
         LD_LIBRARY_PATH=/usr/local/lib ffmpeg -buildconf && \
