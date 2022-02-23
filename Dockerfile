@@ -1,5 +1,12 @@
 FROM nvcr.io/nvidia/l4t-base:r32.6.1 AS base
 
+# ideas from
+# https://github.com/Metric-Void/jetson-ffmpeg-docker/blob/master/Dockerfile
+# this is mostly https://github.com/blakeblackshear/frigate/blob/master/docker/Dockerfile.ffmpeg.aarch64
+# there are mods before ffmpeg
+# and after it's unpacked.
+# there's also some mods around when libs are extracted/copied.
+
 WORKDIR     /tmp/workdir
 
 ENV     DEBIAN_FRONTEND=noninteractive
@@ -489,8 +496,6 @@ RUN \
         for pc in ${PREFIX}/lib/pkgconfig/libav*.pc ${PREFIX}/lib/pkgconfig/libpostproc.pc ${PREFIX}/lib/pkgconfig/libsw*.pc; do \
         sed "s:${PREFIX}:/usr/local:g" <"$pc" >/usr/local/lib/pkgconfig/"${pc##*/}"; \
         done
-
-# libavdevice.so.58
 
 FROM        base AS release
 
