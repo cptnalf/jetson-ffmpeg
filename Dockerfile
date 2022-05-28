@@ -17,8 +17,8 @@ RUN     apt-get -yqq update && \
 
 FROM base as build
 
-ENV     FFMPEG_VERSION=4.3.2 \
-        AOM_VERSION=v1.0.0 \
+ARG     FFMPEG_VERSION=4.3.2
+ENV     AOM_VERSION=v1.0.0 \
         FDKAAC_VERSION=0.1.5 \
         FREETYPE_VERSION=2.11.0 \
         FRIBIDI_VERSION=0.19.7 \
