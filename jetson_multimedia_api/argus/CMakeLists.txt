@@ -1,4 +1,4 @@
-# Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -44,5 +44,7 @@ add_subdirectory(samples/yuvJpeg)
 add_subdirectory(samples/userAutoExposure)
 add_subdirectory(samples/userAutoWhiteBalance)
 add_subdirectory(samples/utils)
+add_subdirectory(samples/yuvOneShot)
+
 
 include(CPack)

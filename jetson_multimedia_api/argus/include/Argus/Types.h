@@ -276,10 +276,12 @@ DEFINE_UUID(PixelFormat, PIXEL_FMT_P016,          57b484d9,93d5,11e5,aeb6,1c,b7,
  * imaging sensor before any sort of image processing (ie. pre-ISP format).
  */
 DEFINE_NAMED_UUID_CLASS(SensorModeType);
-DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_DEPTH, 64483464,4b91,11e6,bbbd,40,16,7e,ab,86,92);
-DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_YUV,   6453e00c,4b91,11e6,871d,40,16,7e,ab,86,92);
-DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_RGB,   6463d4c6,4b91,11e6,88a3,40,16,7e,ab,86,92);
-DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_BAYER, 646f04ea,4b91,11e6,9c06,40,16,7e,ab,86,92);
+DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_DEPTH,     64483464,4b91,11e6,bbbd,40,16,7e,ab,86,92);
+DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_YUV,       6453e00c,4b91,11e6,871d,40,16,7e,ab,86,92);
+DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_RGB,       6463d4c6,4b91,11e6,88a3,40,16,7e,ab,86,92);
+DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_BAYER,     646f04ea,4b91,11e6,9c06,40,16,7e,ab,86,92);
+DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_BAYER_PWL, f6a08220,6a0f,11eb,8572,08,00,20,0c,9a,66);
+DEFINE_UUID(SensorModeType, SENSOR_MODE_TYPE_BAYER_DOL, f6a08221,6a0f,11eb,8572,08,00,20,0c,9a,66);
 
 /**
  * SensorPlacement defines the placement of the sensor on the module
@@ -291,6 +293,16 @@ DEFINE_UUID(SensorPlacement, SENSOR_PLACEMENT_CENTER_OR_CENTER_RIGHT,        01d
 DEFINE_UUID(SensorPlacement, SENSOR_PLACEMENT_TOP_LEFT,                      01dba8b3,1946,11eb,8b6f,08,00,20,0c,9a,66);
 DEFINE_UUID(SensorPlacement, SENSOR_PLACEMENT_BOTTOM_RIGHT,                  01dba8b4,1946,11eb,8b6f,08,00,20,0c,9a,66);
 DEFINE_UUID(SensorPlacement, SENSOR_PLACEMENT_TOP_RIGHT,                     01dba8b5,1946,11eb,8b6f,08,00,20,0c,9a,66);
+
+/**
+ * Bayer Phases
+ */
+DEFINE_NAMED_UUID_CLASS(BayerPhase);
+DEFINE_UUID(BayerPhase, BAYER_PHASE_UNKNOWN,     b9d43270,6a0e,12eb,8572,08,00,20,0c,9a,66);
+DEFINE_UUID(BayerPhase, BAYER_PHASE_RGGB,        b9d43271,6a0e,12eb,8572,08,00,20,0c,9a,66);
+DEFINE_UUID(BayerPhase, BAYER_PHASE_BGGR,        b9d43272,6a0e,12eb,8572,08,00,20,0c,9a,66);
+DEFINE_UUID(BayerPhase, BAYER_PHASE_GRBG,        b9d43273,6a0e,12eb,8572,08,00,20,0c,9a,66);
+DEFINE_UUID(BayerPhase, BAYER_PHASE_GBRG,        b9d43274,6a0e,12eb,8572,08,00,20,0c,9a,66);
 
 /**
  * Utility class for libargus interfaces.
@@ -432,7 +444,7 @@ public:
     explicit UniqueObj(T* obj=NULL): m_obj(obj) {}
 
     void reset(T* obj=NULL)
-        { if (m_obj) const_cast<typename remove_const<T*>::type>(m_obj)->destroy(); m_obj = obj; }
+        { if (m_obj && (m_obj != obj)) const_cast<typename remove_const<T*>::type>(m_obj)->destroy(); m_obj = obj; }
     T* release()
         { T* obj = m_obj; m_obj = NULL; return obj; }
 

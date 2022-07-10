@@ -84,6 +84,7 @@ void printSensorModeInfo(Argus::SensorMode* sensorMode, const char* indent);
  */
 void printUUID(const Argus::UUID& uuid);
 
+
 }; // namespace ArgusHelpers
 
 }; // namespace ArgusSamples

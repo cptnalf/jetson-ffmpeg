@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,6 +34,20 @@
 
 #define CRC32_POLYNOMIAL  0xEDB88320L
 #define MAX_OUT_BUFFERS 32
+
+typedef struct RPS_List
+{
+    uint32_t nFrameId;
+    bool bLTRefFrame;
+} RPS_List;
+
+typedef struct RPS_param
+{
+    sem_t sema;
+    uint32_t m_numTemperalLayers;
+    uint32_t nActiveRefFrames;
+    RPS_List rps_list[V4L2_MAX_REF_FRAMES];
+} RPS_param;
 
 typedef struct CrcRec
 {
@@ -96,6 +110,10 @@ typedef struct
     uint32_t nMinQpB;              /* Minimum QP value to use for B frames */
     uint32_t nMaxQpB;              /* Maximum QP value to use for B frames */
     uint32_t sMaxQp;               /* Session Maximum QP value */
+    uint32_t sar_width;
+    uint32_t sar_height;
+    uint8_t bit_depth;
+    uint8_t chroma_format_idc;
     int output_plane_fd[32];
     bool insert_sps_pps_at_idr;
     bool enable_slice_level_encode;
@@ -104,6 +122,7 @@ typedef struct
     bool enable_extended_colorformat;
     bool insert_aud;
     bool alliframes;
+    bool is_semiplanar;
     enum v4l2_memory output_memory_type;
     enum v4l2_colorspace cs;
 
@@ -112,7 +131,6 @@ typedef struct
     bool copy_timestamp;
     uint32_t start_ts;
     bool dump_mv;
-    bool externalRPS;
     bool enableGDR;
     bool bGapsInFrameNumAllowed;
     bool bnoIframe;
@@ -123,6 +141,10 @@ typedef struct
     bool b_use_enc_cmd;
     bool enableLossless;
     bool got_eos;
+
+    bool externalRPS;
+    bool RPS_threeLayerSvc;
+    RPS_param rps_par;
 
     bool use_gold_crc;
     char gold_crc[20];

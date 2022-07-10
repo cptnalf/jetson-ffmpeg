@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (c) 2016-2017, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -104,7 +104,6 @@ LDFLAGS += \
 	-lpthread -lv4l2 -lEGL -lGLESv2 -lX11 \
 	-lnvbuf_utils -lnvjpeg -lnvosd -ldrm \
 	-lcuda -lcudart \
-	-lnvinfer -lnvparsers -lnvonnxparser \
 	-L"$(TARGET_ROOTFS)/$(CUDA_PATH)/lib64" \
 	-L"$(TARGET_ROOTFS)/usr/lib/$(TEGRA_ARMABI)" \
 	-L"$(TARGET_ROOTFS)/usr/lib/$(TEGRA_ARMABI)/tegra"

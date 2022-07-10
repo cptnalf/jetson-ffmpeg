@@ -41,7 +41,7 @@ namespace Argus
 
 /**
  * Adds internal de-fog post-processing algorithms. It introduces one new interface:
- *   - IDeFogSettings; used to enable de-fog for a Request.
+ *   - Ext::IDeFogSettings: enables de-fog for a Request.
  *
  * @defgroup ArgusExtDeFog Ext::DeFog
  * @ingroup ArgusExtensions

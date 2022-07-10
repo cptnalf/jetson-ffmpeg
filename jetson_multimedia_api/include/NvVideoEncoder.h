@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -538,10 +538,36 @@ public:
             uint32_t MaxQpP, uint32_t MinQpB, uint32_t MaxQpB);
 
     /**
+     * Sets Sample Aspect Ratio width for VUI encoding.
+     *
+     * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with control Id
+     * \c V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_WIDTH or
+     * #V4L2_CID_MPEG_VIDEOENC_H265_VUI_EXT_SAR_WIDTH, depending on the
+     * encoder type. Must be called after setFormat on both the planes.
+     *
+     * @param[in] sar_width SAR for width.
+     * @returns 0 for success, -1 otherwise.
+     */
+    int setSampleAspectRatioWidth(uint32_t sar_width);
+
+    /**
+     * Sets Sample Aspect Ratio height for VUI encoding.
+     *
+     * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with control Id
+     * \c V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_HEIGHT or
+     * #V4L2_CID_MPEG_VIDEOENC_H265_VUI_EXT_SAR_HEIGHT, depending on the
+     * encoder type. Must be called after setFormat on both the planes.
+     *
+     * @param[in] sar_height SAR for height.
+     * @returns 0 for success, -1 otherwise.
+     */
+    int setSampleAspectRatioHeight(uint32_t sar_height);
+
+    /**
      * Enables/disables insert VUI.
      *
      * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with Control ID
-     * @c V4L2_CID_MPEG_VIDEO_H264_VUI_SAR_ENABLE. Must be called after
+     * @c V4L2_CID_MPEG_VIDEOENC_INSERT_VUI. Must be called after
      * setFormat on both the planes.
      *
      * @param[in] enabled Boolean value indicating whether to enable/disable
@@ -601,6 +627,32 @@ public:
      * @return 0 for success, -1 otherwise.
      */
     int setPocType(uint32_t pocType);
+
+    /**
+     * Sets the H.265 encoder Chroma Format IDC.
+     *
+     * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with Control ID
+     * #V4L2_CID_MPEG_VIDEOENC_H265_CHROMA_FACTOR_IDC. Must be called after setFormat on both
+     * the planes and before \c requestBuffers on any of the planes.
+     *
+     * @param[in]  crfactor     Set @c chroma_factor_idc for the encoder.
+     *
+     * @return 0 for success, -1 otherwise.
+     */
+    int setChromaFactorIDC(uint8_t crfactor);
+
+    /**
+     * Sets the lossless encoding for H.264/H.265.
+     *
+     * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with Control ID
+     * #V4L2_CID_MPEG_VIDEOENC_ENABLE_LOSSLESS. Must be called after setFormat on both
+     * the planes and before \c requestBuffers on any of the planes.
+     *
+     * @param[in]  enabled      Indicates whether to enable or disable
+     *                           the control.
+     * @return 0 for success, -1 otherwise.
+     */
+    int setLossless(bool enabled);
 
     /**
      * Issues Poll on the device which blocks until :

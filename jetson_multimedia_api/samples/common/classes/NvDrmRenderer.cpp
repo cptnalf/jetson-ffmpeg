@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
  * and any modifications thereto.  Any use, reproduction, disclosure or
@@ -189,6 +189,7 @@ NvDrmRenderer::NvDrmRenderer(const char *name, uint32_t w, uint32_t h,
   stop_thread = false;
   flipPending = false;
   renderingStarted = false;
+  planeIsSet = false;
   activeFd = flippedFd = -1;
   last_fb = 0;
   int ret =0;
@@ -304,12 +305,7 @@ NvDrmRenderer::NvDrmRenderer(const char *name, uint32_t w, uint32_t h,
   }
 #endif
 
-  if (streamHDR) {
-    drmModeSetCrtc(drm_fd, drm_crtc_id, -1, w_x, w_y, &drm_conn_id, 1, drm_conn_info->modes);
-  }
-  else {
-    drmModeSetCrtc(drm_fd, drm_crtc_id, -1, w_x, w_y, &drm_conn_id, 1, NULL);
-  }
+  drmModeSetCrtc(drm_fd, drm_crtc_id, -1, w_x, w_y, &drm_conn_id, 1, drm_conn_info->modes);
 
   pthread_mutex_init(&enqueue_lock, NULL);
   pthread_cond_init(&enqueue_cond, NULL);
@@ -720,10 +716,14 @@ NvDrmRenderer::renderInternal(int fd)
       goto error;
     }
 
-    ret = setPlane(0, fb, 0, 0, width, height, 0, 0, width, height);
-    if(ret) {
-      COMP_ERROR_MSG("FAILED TO SET PLANE ");
-      goto error;
+    if (planeIsSet == false)
+    {
+      ret = setPlane(0, fb, 0, 0, width, height, 0, 0, width, height);
+      if(ret) {
+        COMP_ERROR_MSG("FAILED TO SET PLANE ");
+        goto error;
+      }
+      planeIsSet = true;
     }
 
     /* TODO:
@@ -993,6 +993,37 @@ int NvDrmRenderer::getPlaneCount()
     count = pl->count_planes;
     drmModeFreePlaneResources(pl);
   }
+  return count;
+}
+
+int32_t NvDrmRenderer::getPlaneIndex(uint32_t crtc_index,
+                                     int32_t* plane_index)
+{
+  drmModePlaneResPtr pl = NULL;
+  uint32_t count = 0;
+
+  if (!plane_index)
+    return 0;
+
+  pl = drmModeGetPlaneResources(drm_fd);
+  if (pl) {
+    for (uint32_t i = 0; i < pl->count_planes; i++) {
+      drmModePlanePtr plane;
+      plane = drmModeGetPlane(drm_fd, pl->planes[i]);
+      plane_index[i] = -1;
+
+      if (plane) {
+        //Find the plane is with the given crtc
+        if (plane->possible_crtcs & (1 << crtc_index)) {
+          plane_index[count] = i;
+          count++;
+        }
+        drmModeFreePlane(plane);
+      }
+    }
+    drmModeFreePlaneResources(pl);
+  }
+
   return count;
 }
 

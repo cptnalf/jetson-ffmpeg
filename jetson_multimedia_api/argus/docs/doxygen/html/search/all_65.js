@@ -10,6 +10,7 @@ var searchData=
   ['eventqueue',['EventQueue',['../group__ArgusEventQueue.html',1,'']]],
   ['ext_3a_3abayeraveragemap',['Ext::BayerAverageMap',['../group__ArgusExtBayerAverageMap.html',1,'']]],
   ['ext_3a_3abayersharpnessmap',['Ext::BayerSharpnessMap',['../group__ArgusExtBayerSharpnessMap.html',1,'']]],
+  ['ext_3a_3ablockingsessioncameraprovider',['Ext::BlockingSessionCameraProvider',['../group__ArgusExtBlockingSessionCameraProvider.html',1,'']]],
   ['ext_3a_3adebugcapturesession',['Ext::DebugCaptureSession',['../group__ArgusExtDebugCaptureSession.html',1,'']]],
   ['ext_3a_3adefog',['Ext::DeFog',['../group__ArgusExtDeFog.html',1,'']]],
   ['ext_3a_3adolwdrsensormode',['Ext::DolWdrSensorMode',['../group__ArgusExtDolWdrSensorMode.html',1,'']]],

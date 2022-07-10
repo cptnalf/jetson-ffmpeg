@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -127,6 +127,9 @@ bool EventThread::threadExecute()
                     // Flicker
                     Argus::AeFlickerState state = iCaptureMeta->getFlickerState();
                     PROPAGATE_ERROR(dispatcher.message("Flicker state %s \n", state.getName()));
+
+                    PROPAGATE_ERROR(dispatcher.message("aperture info: aperture position %d \n",
+                    iCaptureMeta->getAperturePosition()));
                 }
 
                 const Argus::Ext::IInternalFrameCount *iInternalFrameCount =

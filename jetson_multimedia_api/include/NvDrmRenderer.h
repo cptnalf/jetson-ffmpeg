@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION.  All rights reserved.
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
  * and any modifications thereto.  Any use, reproduction, disclosure or
@@ -223,6 +223,22 @@ public:
     int getPlaneCount();
 
     /**
+     * Gets the plane indexes supported by the given
+     * crtc index.
+     *
+     * @param[in] crtc_index Index of crtc for which the
+     * plane indexes to be found.
+     * @param[in,out] plane_index Pointer to an array which
+     * contains plane indexes. This array should be allocated
+     * by the caller for the size of plane count returned
+     * by getPlaneCount() API.
+     *
+     * @return Count of the indexes written in the given array.
+     * */
+    int getPlaneIndex(uint32_t crtc_index,
+                      int32_t* plane_index);
+
+    /**
      * Gets count of available CRTCs.
      *
      * @return  Count of available CRTCs.
@@ -265,6 +281,7 @@ private:
     int flippedFd;
     bool flipPending;
     bool renderingStarted;
+    bool planeIsSet;
 
     uint32_t hdrBlobId;
     bool hdrBlobCreated;

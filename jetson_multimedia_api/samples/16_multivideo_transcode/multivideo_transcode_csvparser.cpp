@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -66,6 +66,8 @@ print_help(void)
             "\t--dbg-level <level>   Sets the debug level [Values 0-3]\n"
             "\t--stats               Report profiling data for the app\n"
             "\t--max-perf            Enable maximum Performance \n"
+            "\t--seek-mode           Seek to begin of input file without re-construct video codec when reach the "
+            "end of input file for loop test (Only works with H264/H265)\n"
             "\t-ni <loop-count>      Number of iterations [Default = 1]\n\n"
 
             "DECODER OPTIONS:\n"
@@ -147,7 +149,7 @@ print_help(void)
             "\tOnly Blocking Mode is supported\n\n"
             "\tThe plane memory types as of now are hardcoded.\n"
             "\tDecoder: Output_plane = V4L2_MEMORY_MMAP & Capture_plane = V4L2_MEMORY_DMABUF \n"
-            "\tEncoder: Output_plane = V4L2_MEMORY_DMABUF & Capture_plane = V4L2_MEMORY_MMAP";
+            "\tEncoder: Output_plane = V4L2_MEMORY_DMABUF & Capture_plane = V4L2_MEMORY_MMAP\n";
 }
 
 static uint32_t
@@ -602,6 +604,10 @@ parse_csv_args(context_t ** ctx, int argc, char *argv[], int num_files)
                 ctx[i]->fps_d = atoi(*argp);
                 CSV_PARSE_CHECK_ERROR(ctx[i]->fps_d == 0, "fps den should be > 0");
                 CHECK_IF_LAST_LOOP(i, num_files, argp, 2);
+            }
+            else if (!strcmp(arg, "--seek-mode"))
+            {
+                ctx[i]->seek_mode = true;
             }
             else if (!strcmp(arg, "-ni"))
             {

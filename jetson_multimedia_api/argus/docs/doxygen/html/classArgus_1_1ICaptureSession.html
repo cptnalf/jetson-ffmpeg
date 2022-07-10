@@ -119,9 +119,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a04675ce7ace82c9ffe1f236dc9f55d39"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceArgus.html#a43dee5758547aaf78710c7c1fe122fe3">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureSession.html#a04675ce7ace82c9ffe1f236dc9f55d39">cancelRequests</a> ()=0</td></tr>
 <tr class="memdesc:a04675ce7ace82c9ffe1f236dc9f55d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all previously submitted requests from the queue.  <a href="#a04675ce7ace82c9ffe1f236dc9f55d39"></a><br/></td></tr>
 <tr class="memitem:a3e02e8605e5ef5148cdbe79c26cf1fa8"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8">capture</a> (const <a class="el" href="classArgus_1_1Request.html">Request</a> *request, uint64_t timeout=<a class="el" href="namespaceArgus.html#a4a5b172cb29e126c9433f8a712a0d0d4">TIMEOUT_INFINITE</a>, <a class="el" href="namespaceArgus.html#a43dee5758547aaf78710c7c1fe122fe3">Status</a> *status=NULL)=0</td></tr>
-<tr class="memdesc:a3e02e8605e5ef5148cdbe79c26cf1fa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submits a single capture request to the request queue.  <a href="#a3e02e8605e5ef5148cdbe79c26cf1fa8"></a><br/></td></tr>
+<tr class="memdesc:a3e02e8605e5ef5148cdbe79c26cf1fa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submits a single capture request.  <a href="#a3e02e8605e5ef5148cdbe79c26cf1fa8"></a><br/></td></tr>
 <tr class="memitem:af94f311dba11bdd33e1c5f3485cee7e7"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureSession.html#af94f311dba11bdd33e1c5f3485cee7e7">captureBurst</a> (const std::vector&lt; const <a class="el" href="classArgus_1_1Request.html">Request</a> * &gt; &amp;requestList, uint64_t timeout=<a class="el" href="namespaceArgus.html#a4a5b172cb29e126c9433f8a712a0d0d4">TIMEOUT_INFINITE</a>, <a class="el" href="namespaceArgus.html#a43dee5758547aaf78710c7c1fe122fe3">Status</a> *status=NULL)=0</td></tr>
-<tr class="memdesc:af94f311dba11bdd33e1c5f3485cee7e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submits a burst to the request queue.  <a href="#af94f311dba11bdd33e1c5f3485cee7e7"></a><br/></td></tr>
+<tr class="memdesc:af94f311dba11bdd33e1c5f3485cee7e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submits a burst of requests.  <a href="#af94f311dba11bdd33e1c5f3485cee7e7"></a><br/></td></tr>
 <tr class="memitem:a38362740984f789d726973fa299f144d"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureSession.html#a38362740984f789d726973fa299f144d">maxBurstRequests</a> () const =0</td></tr>
 <tr class="memdesc:a38362740984f789d726973fa299f144d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum number of capture requests that can be included in a burst capture.  <a href="#a38362740984f789d726973fa299f144d"></a><br/></td></tr>
 <tr class="memitem:afc1d1d0c7ccaae5c96dbddcf98919a10"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1Request.html">Request</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureSession.html#afc1d1d0c7ccaae5c96dbddcf98919a10">createRequest</a> (const CaptureIntent &amp;intent=CAPTURE_INTENT_PREVIEW, <a class="el" href="namespaceArgus.html#a43dee5758547aaf78710c7c1fe122fe3">Status</a> *status=NULL)=0</td></tr>
@@ -178,7 +178,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CaptureSession_8h_source.html#l00219">219</a> of file <a class="el" href="CaptureSession_8h_source.html">CaptureSession.h</a>.</p>
+<p>Definition at line <a class="el" href="CaptureSession_8h_source.html#l00228">228</a> of file <a class="el" href="CaptureSession_8h_source.html">CaptureSession.h</a>.</p>
 
 </div>
 </div>
@@ -248,8 +248,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Submits a single capture request to the request queue. </p>
-<p>The runtime will queue a copy of the request. The client can submit the same request instance in a future call. The request will be copied by the runtime.</p>
+<p>Submits a single capture request. </p>
+<p>For blocking capture session (created by ICameraProvider::createBlockingCaptureSession), it will wait until the request is accepted by lower level driver. For non-blocking capture session (created by <a class="el" href="classArgus_1_1ICameraProvider.html#ae84d50114342447dfbc2552a34288608" title="Creates and returns a new CaptureSession using the given device.">ICameraProvider::createCaptureSession</a>), it will queue a copy of the request to a queue and return.</p>
+<p>The client can submit the same request instance in a future call. The request will be copied by the runtime.</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">request</td><td>Parameters for the capture. </td></tr>
@@ -300,8 +301,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Submits a burst to the request queue. </p>
-<p>The runtime will queue a copy of the burst. The runtime will either accept the entire burst or refuse it completely (that is, no partial bursts will be accepted).</p>
+<p>Submits a burst of requests. </p>
+<p>For blocking capture session (created by ICameraProvider::createBlockingCaptureSession), it will wait until the first request is accepted by lower level driver. For non-blocking capture session (created by <a class="el" href="classArgus_1_1ICameraProvider.html#ae84d50114342447dfbc2552a34288608" title="Creates and returns a new CaptureSession using the given device.">ICameraProvider::createCaptureSession</a>), it will queue a copy of the requests to a queue and return.</p>
+<p>The runtime will either accept the entire burst or refuse it completely (that is, no partial bursts will be accepted).</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">requestList</td><td>The list of requests that make up the burst. </td></tr>
@@ -614,7 +616,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Shuts down any repeating capture. </p>
-<dl class="section return"><dt>Returns:</dt><dd>The range of capture ids generated by the most recent <a class="el" href="classArgus_1_1ICaptureSession.html#a76f0c7a185351ddeb521e4d0f46b8ca2" title="Sets up a repeating request.">repeat()</a> / <a class="el" href="classArgus_1_1ICaptureSession.html#aedf68af40770a5728c9a8572dba79da3" title="Sets up a repeating burst request.">repeatBurst()</a> call. Note that some captures within that range may have been generated by explicit <a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8" title="Submits a single capture request to the request queue.">capture()</a> calls made while the repeating capture was in force. If no captures were generated by the most recent <a class="el" href="classArgus_1_1ICaptureSession.html#a76f0c7a185351ddeb521e4d0f46b8ca2" title="Sets up a repeating request.">repeat()</a> / <a class="el" href="classArgus_1_1ICaptureSession.html#aedf68af40770a5728c9a8572dba79da3" title="Sets up a repeating burst request.">repeatBurst()</a> call, <code>Range&lt;uint32_t&gt;(0,0)</code> will be returned. </dd></dl>
+<dl class="section return"><dt>Returns:</dt><dd>The range of capture ids generated by the most recent <a class="el" href="classArgus_1_1ICaptureSession.html#a76f0c7a185351ddeb521e4d0f46b8ca2" title="Sets up a repeating request.">repeat()</a> / <a class="el" href="classArgus_1_1ICaptureSession.html#aedf68af40770a5728c9a8572dba79da3" title="Sets up a repeating burst request.">repeatBurst()</a> call. Note that some captures within that range may have been generated by explicit <a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8" title="Submits a single capture request.">capture()</a> calls made while the repeating capture was in force. If no captures were generated by the most recent <a class="el" href="classArgus_1_1ICaptureSession.html#a76f0c7a185351ddeb521e4d0f46b8ca2" title="Sets up a repeating request.">repeat()</a> / <a class="el" href="classArgus_1_1ICaptureSession.html#aedf68af40770a5728c9a8572dba79da3" title="Sets up a repeating burst request.">repeatBurst()</a> call, <code>Range&lt;uint32_t&gt;(0,0)</code> will be returned. </dd></dl>
 
 </div>
 </div>
@@ -656,7 +658,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:56 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:50 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

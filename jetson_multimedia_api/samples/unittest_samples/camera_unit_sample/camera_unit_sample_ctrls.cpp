@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -387,4 +387,37 @@ int set_color_saturation (int fd, float saturation)
 
     cout << "Setting color saturation " << saturation << endl;
     return 0;
+}
+
+int get_metadata(int fd, int index)
+{
+    struct v4l2_ext_controls extCtrls;
+    struct v4l2_ext_control control;
+    v4l2_argus_ctrl_metadata metadata;
+    memset (&control, 0, sizeof (control));
+    memset (&extCtrls, 0, sizeof (extCtrls));
+
+    int ret_io;
+    extCtrls.controls = &control;
+    extCtrls.count = 1;
+    extCtrls.ctrl_class = V4L2_CTRL_CLASS_CAMERA;
+    metadata.BufferIndex = index;
+
+    control.id = V4L2_CID_ARGUS_METADATA;
+    control.string = (char *)&metadata;
+
+    ret_io = v4l2_ioctl(fd, VIDIOC_G_EXT_CTRLS, &extCtrls);
+
+    if (ret_io == 0)
+    {
+        fprintf(stderr,"\n %s Brightness %f AeLocked %d ValidFrameStatus %d" \
+                "BufferIndex %d AwbCCT %u ISO %u FrameDuration %llu exposure %llu" \
+                "IspDigitalGain %f SensorAnalogGain %f AEState %d AWBState %d\n", \
+                strerror(errno), metadata.SceneLux, metadata.AeLocked, \
+                metadata.ValidFrameStatus, metadata.BufferIndex, metadata.AwbCCT, \
+                metadata.SensorSensitivity, metadata.FrameDuration, \
+                metadata.SensorExposureTime, metadata.IspDigitalGain,\
+                metadata.SensorAnalogGain, metadata.AEState, metadata.AWBState);
+    }
+    return ret_io;
 }

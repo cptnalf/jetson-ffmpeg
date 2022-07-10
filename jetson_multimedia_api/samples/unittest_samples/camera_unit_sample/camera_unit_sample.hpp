@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -257,6 +257,7 @@ typedef struct
     bool set_exptimerange;
     bool fullscreen_mode;
     bool disable_rendering;
+    bool enable_metadata;
 
     bool in_error;
     bool eos;

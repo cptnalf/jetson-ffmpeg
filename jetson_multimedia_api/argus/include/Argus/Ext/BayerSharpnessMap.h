@@ -43,8 +43,8 @@ namespace Argus
  * Adds internally-generated sharpness metrics to CaptureMetadata results. These are used
  * in order to help determine the correct position of the lens to achieve the best focus.
  * It introduces two new interfaces:
- *   - IBayerSharpnessMapSettings; used to enable sharness map generation in a capture Request.
- *   - IBayerSharpnessMap; exposes the sharpness map metrics from the CaptureMetadata.
+ *   - Ext::IBayerSharpnessMapSettings: enables sharness map generation in a capture Request.
+ *   - Ext::IBayerSharpnessMap: exposes the sharpness map metrics from the CaptureMetadata.
  *
  * @defgroup ArgusExtBayerSharpnessMap Ext::BayerSharpnessMap
  * @ingroup ArgusExtensions

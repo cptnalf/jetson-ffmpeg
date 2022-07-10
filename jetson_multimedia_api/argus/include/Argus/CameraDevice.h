@@ -72,7 +72,8 @@ public:
 
     /**
      * Returns the camera UUID.
-     * @todo Describe the meaning of the camera UUID.
+     * In UUID, clock_seq contains low 16 bits of GUID,
+     * node[6] contains high 48 bits of GUID.
      */
     virtual UUID getUUID() const = 0;
 
@@ -182,6 +183,18 @@ public:
      */
     virtual Range<float> getExposureCompensationRange() const = 0;
 
+    /**
+     * Returns the model name of the device.
+     */
+    virtual const std::string& getModelName() const = 0;
+
+    /**
+     * Returns the module string for the device.
+     * Contains the device's name, position, and partial model number.
+     * This string is unique for each device on the system.
+     */
+    virtual const std::string& getModuleString() const = 0;
+
 protected:
     ~ICameraProperties() {}
 };
@@ -223,6 +236,15 @@ public:
     virtual Range<uint64_t> getExposureTimeRange() const = 0;
 
     /**
+     * Returns the hdr ratio range, it is the ratio of long exposure vs short exposure.
+     * When min and/or max is greater than 1, long exposure range is given by getExposureTimeRange()
+     * and short exposure range is computed as following:
+     * short exposure min = getExposureTimeRange().min() / getHdrRatioRange().max()
+     * short exposure max = getExposureTimeRange().max() / getHdrRatioRange().min().
+     */
+    virtual Range<float> getHdrRatioRange() const = 0;
+
+    /**
      * Returns the supported frame duration range (in nanoseconds).
      */
     virtual Range<uint64_t> getFrameDurationRange() const = 0;
@@ -255,6 +277,11 @@ public:
      * Piecewise Linear Compressed output, etc.)
      */
     virtual SensorModeType getSensorModeType() const = 0;
+
+    /**
+     * Describes the bayer phase of Bayer mode
+     */
+    virtual BayerPhase getBayerPhase() const = 0;
 
     /**
      * Checks if the buffer provided is supported by the camera device.

@@ -146,6 +146,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aea5453e4036326b63ea795237a135632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the supported range of ISP digital gain.  <a href="#aea5453e4036326b63ea795237a135632"></a><br/></td></tr>
 <tr class="memitem:a2ae73495b253bf7150ed6006ca113e9e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1Range.html">Range</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICameraProperties.html#a2ae73495b253bf7150ed6006ca113e9e">getExposureCompensationRange</a> () const =0</td></tr>
 <tr class="memdesc:a2ae73495b253bf7150ed6006ca113e9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the supported range of Exposure Compensation.  <a href="#a2ae73495b253bf7150ed6006ca113e9e"></a><br/></td></tr>
+<tr class="memitem:a0b732f76de9af87565d17e46a23fe525"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICameraProperties.html#a0b732f76de9af87565d17e46a23fe525">getModelName</a> () const =0</td></tr>
+<tr class="memdesc:a0b732f76de9af87565d17e46a23fe525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the model name of the device.  <a href="#a0b732f76de9af87565d17e46a23fe525"></a><br/></td></tr>
+<tr class="memitem:ab1f686ecac31392ab7d4e8d9ae895326"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICameraProperties.html#ab1f686ecac31392ab7d4e8d9ae895326">getModuleString</a> () const =0</td></tr>
+<tr class="memdesc:ab1f686ecac31392ab7d4e8d9ae895326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the module string for the device.  <a href="#ab1f686ecac31392ab7d4e8d9ae895326"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -184,7 +188,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00186">186</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
+<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00199">199</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
 
 </div>
 </div>
@@ -560,6 +564,57 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0b732f76de9af87565d17e46a23fe525"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const std::string&amp; Argus::ICameraProperties::getModelName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the model name of the device. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab1f686ecac31392ab7d4e8d9ae895326"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const std::string&amp; Argus::ICameraProperties::getModuleString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the module string for the device. </p>
+<p>Contains the device's name, position, and partial model number. This string is unique for each device on the system. </p>
+
+</div>
+</div>
 <a class="anchor" id="aced19b2fb5048198f53e6ae993eff008"></a>
 <div class="memitem">
 <div class="memproto">
@@ -607,7 +662,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the camera <a class="el" href="structArgus_1_1UUID.html" title="A universally unique identifier.">UUID</a>. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Describe the meaning of the camera <a class="el" href="structArgus_1_1UUID.html" title="A universally unique identifier.">UUID</a>. </dd></dl>
+<p>In <a class="el" href="structArgus_1_1UUID.html" title="A universally unique identifier.">UUID</a>, clock_seq contains low 16 bits of GUID, node[6] contains high 48 bits of GUID. </p>
 
 </div>
 </div>
@@ -642,7 +697,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:56 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:50 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

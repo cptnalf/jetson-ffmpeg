@@ -90,7 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="EventThread_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2016-2017, NVIDIA CORPORATION. All rights reserved.</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * Redistribution and use in source and binary forms, with or without</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * modification, are permitted provided that the following conditions</span></div>
@@ -218,33 +218,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                    <span class="comment">// Flicker</span></div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                    Argus::AeFlickerState state = iCaptureMeta-&gt;getFlickerState();</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                    PROPAGATE_ERROR(dispatcher.<a class="code" href="classArgusSamples_1_1Dispatcher.html#a6fd8b82bf276e3d3ebf0f8dee616ba3c" title="Output a message if verbose mode is enabled.">message</a>(<span class="stringliteral">&quot;Flicker state %s \n&quot;</span>, state.getName()));</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                }</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                <span class="keyword">const</span> Argus::Ext::IInternalFrameCount *iInternalFrameCount =</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                    Argus::interface_cast&lt;<span class="keyword">const</span> Argus::Ext::IInternalFrameCount&gt;(metaData);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                <span class="keywordflow">if</span> (iInternalFrameCount)</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                {</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                    <span class="keyword">const</span> uint64_t currentFrameCount = iInternalFrameCount-&gt;getInternalFrameCount();</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                    PROPAGATE_ERROR(<a class="code" href="classArgusSamples_1_1EventThread.html#af0b4590350fc96130bdba0ce9b3fd330">m_sessionPerfTracker</a>-&gt;<a class="code" href="classArgusSamples_1_1SessionPerfTracker.html#adc0d9a7ed537ce62f2172eb5d4d3014a" title="Trigger a session event.">onEvent</a>(<a class="code" href="namespaceArgusSamples.html#a72833a481ac325fdef97a3c77e46e5aeac4a2488f7df844d47e3c318fcf081cf9">SESSION_EVENT_FRAME_COUNT</a>,</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                        currentFrameCount));</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                }</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;            }</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        }</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    }</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;}</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                    PROPAGATE_ERROR(dispatcher.<a class="code" href="classArgusSamples_1_1Dispatcher.html#a6fd8b82bf276e3d3ebf0f8dee616ba3c" title="Output a message if verbose mode is enabled.">message</a>(<span class="stringliteral">&quot;aperture info: aperture position %d \n&quot;</span>,</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                    iCaptureMeta-&gt;getAperturePosition()));</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                }</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                <span class="keyword">const</span> Argus::Ext::IInternalFrameCount *iInternalFrameCount =</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                    Argus::interface_cast&lt;<span class="keyword">const</span> Argus::Ext::IInternalFrameCount&gt;(metaData);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                <span class="keywordflow">if</span> (iInternalFrameCount)</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                {</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                    <span class="keyword">const</span> uint64_t currentFrameCount = iInternalFrameCount-&gt;getInternalFrameCount();</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                    PROPAGATE_ERROR(<a class="code" href="classArgusSamples_1_1EventThread.html#af0b4590350fc96130bdba0ce9b3fd330">m_sessionPerfTracker</a>-&gt;<a class="code" href="classArgusSamples_1_1SessionPerfTracker.html#adc0d9a7ed537ce62f2172eb5d4d3014a" title="Trigger a session event.">onEvent</a>(<a class="code" href="namespaceArgusSamples.html#a72833a481ac325fdef97a3c77e46e5aeac4a2488f7df844d47e3c318fcf081cf9">SESSION_EVENT_FRAME_COUNT</a>,</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                        currentFrameCount));</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                }</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            }</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        }</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    }</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno"><a class="code" href="classArgusSamples_1_1EventThread.html#ab638abeda6897a6154b6e6c0a495ac47">  147</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classArgusSamples_1_1EventThread.html#ab638abeda6897a6154b6e6c0a495ac47">EventThread::threadShutdown</a>()</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;{</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;}</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}; <span class="comment">// namespace ArgusSamples</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="line"><a name="l00150"></a><span class="lineno"><a class="code" href="classArgusSamples_1_1EventThread.html#ab638abeda6897a6154b6e6c0a495ac47">  150</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classArgusSamples_1_1EventThread.html#ab638abeda6897a6154b6e6c0a495ac47">EventThread::threadShutdown</a>()</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;{</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;}</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;}; <span class="comment">// namespace ArgusSamples</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:57 for Argus Camera Sample by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:53 for Argus Camera Sample by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

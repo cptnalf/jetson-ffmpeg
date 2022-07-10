@@ -42,7 +42,7 @@ namespace Argus
 /**
  * Adds a timestamp interface to get TSC HW timestamp.
  * It introduces one new interface:
- *   - ISensorTimestampTsc: used to get TSC HW timestamp
+ *   - Ext::ISensorTimestampTsc: gets TSC HW timestamp.
  * @defgroup ArgusExtSensorTimestampTsc Ext::SensorTimestampTsc
  * @ingroup ArgusExtensions
  */

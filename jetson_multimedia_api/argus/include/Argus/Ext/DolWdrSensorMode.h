@@ -43,7 +43,7 @@ namespace Argus
 /**
  * Adds extra functionalities for the Digital Overlap (DOL) Wide Dynamic
  * Range (WDR) sensor mode type. It introduces one new interface:
- *   - IDolWdrSensorMode; Returns the extended properties specific to a Digital Overlap (DOL)
+ *   - Ext::IDolWdrSensorMode: Returns the extended properties specific to a Digital Overlap (DOL)
  *                        Wide Dynamic Range (WDR) extended sensor mode. DOL WDR is a
  *                        multi-exposure technology that enables fusion of various exposures
  *                        from a single frame to produce a WDR image.

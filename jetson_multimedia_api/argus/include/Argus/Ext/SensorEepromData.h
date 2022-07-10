@@ -42,7 +42,7 @@ namespace Argus
 /**
  * Adds a EEPROM interface to get EEPROM data.
  * It introduces one new interface:
- *   - ISensorEepromData: used to get EEPROM data
+ *   - Ext::ISensorEepromData: Gets EEPROM data.
  * @defgroup ArgusExtEepromData Ext::SensorEepromData
  * @ingroup ArgusExtensions
  */

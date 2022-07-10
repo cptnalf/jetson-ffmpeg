@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (c) 2016-2017, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -32,7 +32,7 @@ include ../Rules.mk
 
 APP := backend
 
-ENABLETRT ?= 1
+ENABLE_TRT ?= 1
 
 SRCS := \
 	v4l2_backend_csvparser.cpp \
@@ -45,7 +45,7 @@ OBJS += \
 	$(ALGO_CUDA_DIR)/NvAnalysis.o \
 	$(ALGO_CUDA_DIR)/NvCudaProc.o
 
-ifeq ($(ENABLETRT), 1)
+ifeq ($(ENABLE_TRT), 1)
 CPPFLAGS += -DENABLE_TRT
 
 OBJS += \
@@ -53,6 +53,9 @@ OBJS += \
 endif
 
 LDFLAGS += -lopencv_objdetect
+ifeq ($(ENABLE_TRT), 1)
+LDFLAGS += 	-lnvinfer -lnvparsers -lnvonnxparser
+endif
 
 all: $(APP)
 

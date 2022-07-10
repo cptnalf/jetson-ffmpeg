@@ -47,7 +47,7 @@ enum ArgusInjectError
 /**
  * Adds a debug interface to dump internal libargus runtime information.
  * It introduces one new interface:
- *   - IDebugCaptureSession: used to dump session runtime information
+ *   - Ext::IDebugCaptureSession: dumps session runtime information.
  *
  * @defgroup ArgusExtDebugCaptureSession Ext::DebugCaptureSession
  * @ingroup ArgusExtensions

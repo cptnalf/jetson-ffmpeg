@@ -43,7 +43,7 @@ namespace Argus
 /**
  * This adds a method to interpret the compressed histogram data correctly
  * It introduces one new interface:
- *  -INonLinearHistogram -returns a list of normalized bin indices that map bins from
+ *  - Ext::INonLinearHistogram: returns a list of normalized bin indices that map bins from
  *                        getHistogram() to compressed pixel values.
  * @defgroup ArgusExtNonLinearHistogram Ext::NonLinearHistogram
  * @ingroup ArgusExtensions

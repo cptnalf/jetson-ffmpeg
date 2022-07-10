@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -248,6 +248,11 @@ public:
      * Returns the flicker state of this capture.
      */
     virtual AeFlickerState getFlickerState() const = 0;
+
+    /**
+     * Returns the aperture position.
+     */
+    virtual int32_t getAperturePosition() const = 0;
 
     /**
      * Returns the focuser position used for this capture (in focuser steps).

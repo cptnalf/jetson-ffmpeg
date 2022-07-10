@@ -16,6 +16,7 @@ var searchData=
   ['_7eibayerhistogram',['~IBayerHistogram',['../classArgus_1_1IBayerHistogram.html#ac181228b5fae46e334b55d7526ae77e0',1,'Argus::IBayerHistogram']]],
   ['_7eibayersharpnessmap',['~IBayerSharpnessMap',['../classArgus_1_1Ext_1_1IBayerSharpnessMap.html#a2a0cacbc2d17585d75f07819b7fe01c0',1,'Argus::Ext::IBayerSharpnessMap']]],
   ['_7eibayersharpnessmapsettings',['~IBayerSharpnessMapSettings',['../classArgus_1_1Ext_1_1IBayerSharpnessMapSettings.html#ab84f591c061907d8803cbd3bfeeb3052',1,'Argus::Ext::IBayerSharpnessMapSettings']]],
+  ['_7eiblockingsessioncameraprovider',['~IBlockingSessionCameraProvider',['../classArgus_1_1Ext_1_1IBlockingSessionCameraProvider.html#a24be84c7c669fcfc6f2b128a2899b540',1,'Argus::Ext::IBlockingSessionCameraProvider']]],
   ['_7eibuffer',['~IBuffer',['../classArgus_1_1IBuffer.html#a1aa871945eceabec9ec193103622d9b6',1,'Argus::IBuffer']]],
   ['_7eibufferoutputstream',['~IBufferOutputStream',['../classArgus_1_1IBufferOutputStream.html#a01eeb31ddf9c2a9b912d8685766b1671',1,'Argus::IBufferOutputStream']]],
   ['_7eibufferoutputstreamsettings',['~IBufferOutputStreamSettings',['../classArgus_1_1IBufferOutputStreamSettings.html#ab95b8c362e1e901b2526ec14f91e6c1b',1,'Argus::IBufferOutputStreamSettings']]],

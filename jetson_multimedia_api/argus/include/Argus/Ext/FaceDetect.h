@@ -41,11 +41,11 @@ namespace Argus
 
 /**
  * Adds internal face-detection algorithms. It introduces four new interfaces:
- *   - IFaceDetectCaps; exposes the face detection capabilities of a CaptureSession.
- *   - IFaceDetectSettings; used to enable face detection for a Request.
- *   - IFaceDetectMetadata; returns a list of FaceDetectResult objects from a
+ *   - Ext::IFaceDetectCaps; exposes the face detection capabilities of a CaptureSession.
+ *   - Ext::IFaceDetectSettings; enables face detection for a Request.
+ *   - Ext::IFaceDetectMetadata; returns a list of FaceDetectResult objects from a
  *                          completed capture's CaptureMetadata.
- *   - IFaceDetectResult; exposes the image rect and confidence level of a result object
+ *   - Ext::IFaceDetectResult; exposes the image rect and confidence level of a result object
  *                        returned by getFaceDetectResults.
  *
  * @defgroup ArgusExtFaceDetect Ext::FaceDetect

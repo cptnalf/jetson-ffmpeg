@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -244,6 +244,19 @@ int set_digital_gain_range (int fd, float range_low, float range_high);
  *
  * @return 0 for success, -1 otherwise.
  */
+
 int set_color_saturation (int fd, float saturation);
+
+/***
+ * @brief Gets argus metata
+ * Calls VIDIOC_G_EXT_CTRLS IOCTL internally with Control ID
+ * \c V4L2_CID_ARGUS_METADATA.
+ *
+ * @param[in] fd Argusv4l2 context FD.
+ * @param[in] index v4l2 buffer index
+ *
+ * @return 0 for success, -1 otherwise
+*/
+int get_metadata(int fd, int index);
 
 #endif /* __CAMERA_SAMPLE__CTRLS_H__ */

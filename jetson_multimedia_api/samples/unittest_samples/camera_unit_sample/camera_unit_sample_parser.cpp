@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -119,6 +119,7 @@ print_help(void)
             << "\t-nf <num>                 Number of Frames. [Default = 300]\n"
             << "\t-s <loop_cnt>             Stress test count to run. [Default = 1]\n"
             << "\t-f                        Fullscreen Display mode. [Default = disabled]\n"
+            << "\t--metadata                Get metadata by V4L2_CID_ARGUS_METADATA\n"
             << endl;
 }
 
@@ -434,6 +435,10 @@ parse_cmdline_args(context_t * ctx, int argc, const char *argv[])
             int num = (uint32_t)atoi(*argp);
             CSV_PARSE_CHECK_ERROR((num == 0), "Number of Frames should not be 0");
             ctx->num_frames = num;
+        }
+        else if (!strcmp(arg, "--metadata"))
+        {
+            ctx->enable_metadata = true;
         }
         else
         {

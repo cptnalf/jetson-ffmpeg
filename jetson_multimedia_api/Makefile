@@ -51,8 +51,7 @@ SUBDIRS = \
 	samples/unittest_samples/decoder_unit_sample \
 	samples/unittest_samples/encoder_unit_sample \
 	samples/unittest_samples/transform_unit_sample \
-	samples/unittest_samples/camera_unit_sample \
-	tools/ConvertCaffeToTrtModel
+	samples/unittest_samples/camera_unit_sample
 
 .PHONY: all
 all:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -163,7 +163,9 @@ typedef struct
     std::stringstream *runtime_params_str;
     uint32_t next_param_change_frame;
     bool got_error;
-    int  num_iterations;
+    bool seek_mode;
+    int iterator_num;
+    int num_iterations;
     uint32_t endofstream_capture;
     uint32_t endofstream_output;
     uint32_t stop_refill;

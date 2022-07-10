@@ -6,6 +6,7 @@ var searchData=
   ['ibayerhistogram',['IBayerHistogram',['../classArgus_1_1IBayerHistogram.html',1,'Argus']]],
   ['ibayersharpnessmap',['IBayerSharpnessMap',['../classArgus_1_1Ext_1_1IBayerSharpnessMap.html',1,'Argus::Ext']]],
   ['ibayersharpnessmapsettings',['IBayerSharpnessMapSettings',['../classArgus_1_1Ext_1_1IBayerSharpnessMapSettings.html',1,'Argus::Ext']]],
+  ['iblockingsessioncameraprovider',['IBlockingSessionCameraProvider',['../classArgus_1_1Ext_1_1IBlockingSessionCameraProvider.html',1,'Argus::Ext']]],
   ['ibuffer',['IBuffer',['../classArgus_1_1IBuffer.html',1,'Argus']]],
   ['ibufferoutputstream',['IBufferOutputStream',['../classArgus_1_1IBufferOutputStream.html',1,'Argus']]],
   ['ibufferoutputstreamsettings',['IBufferOutputStreamSettings',['../classArgus_1_1IBufferOutputStreamSettings.html',1,'Argus']]],

@@ -48,7 +48,7 @@ namespace Argus
  * This is only supported in single process mode as in client-server (multiprocess) mode, client
  * and server are in different process and their own address space.
  *
- *   - Ext::ISensorPrivateMetadataClientBufferRequest: Set client buffer for private metadata.
+ *   - Ext::ISensorPrivateMetadataClientBufferRequest: Sets client buffer for private metadata.
  *
  * @defgroup ArgusExtSensorPrivateMetadataClientBuffer Ext::SensorPrivateMetadataClientBuffer
  * @ingroup ArgusExtensions
@@ -73,9 +73,10 @@ public:
 
     /**
      * Client allocate the metadata buffer and set the address of the buffer,
-     * Argus write the sensor metadata directly to it.
-     * Only supported in single process mode
-     * @param[in] buf address of client buffer.
+     * Argus writes the sensor metadata directly to the buffer.
+     * This method is supported only in single process mode.
+     * @param[in] buf  Specifies the address of client buffer.
+     * @param[in] size Specifies the size in bytes of the metadata buffer.
      */
     virtual Status setClientMetadataBuffer(void* buf, size_t size) = 0;
 

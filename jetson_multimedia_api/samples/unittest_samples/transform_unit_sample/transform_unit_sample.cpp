@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2019-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -86,7 +86,7 @@ print_help(void)
     cout << "Supported pixel formats:\n"
          << "\tnv12  nv21  nv12_709\n"
          << "\targb32  xrgb32\n"
-         << "\tyuv420  yvu420  yuv420_709"
+         << "\tyuv420  yvu420  yuv420_709 yuv444"
          << endl;
 }
 
@@ -109,6 +109,8 @@ get_color_format(const char* userdefined_fmt, NvBufferColorFormat* pixel_format)
         *pixel_format = NvBufferColorFormat_YVU420;
     else if (!strcmp(userdefined_fmt,"yuv420_709"))
         *pixel_format = NvBufferColorFormat_YUV420_709;
+    else if (!strcmp(userdefined_fmt,"yuv444"))
+        *pixel_format = NvBufferColorFormat_YUV444;
     else
         *pixel_format = NvBufferColorFormat_Invalid;
 
@@ -142,6 +144,7 @@ fill_bytes_per_pixel(NvBufferColorFormat pixel_format, int * bytes_per_pixel_req
         case NvBufferColorFormat_YUV420:
         case NvBufferColorFormat_YVU420:
         case NvBufferColorFormat_YUV420_709:
+        case NvBufferColorFormat_YUV444:
         {
             bytes_per_pixel_req[0] = 1;
             bytes_per_pixel_req[1] = 1;
@@ -420,9 +423,8 @@ main(int argc, char const *argv[])
     */
 
     memset(&transform_params,0,sizeof(transform_params));
-    transform_params.transform_flag = NVBUFFER_TRANSFORM_FILTER | NVBUFFER_TRANSFORM_FLIP;
-    transform_params.transform_flip = NvBufferTransform_Rotate180;
-    transform_params.transform_filter = NvBufferTransform_Filter_Nicest;
+    transform_params.transform_flag = NVBUFFER_TRANSFORM_FILTER;
+    transform_params.transform_filter = NvBufferTransform_Filter_Nearest;
     transform_params.src_rect = src_rect;
     transform_params.dst_rect = dest_rect;
 

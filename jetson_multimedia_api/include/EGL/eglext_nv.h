@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright (c) 2008 - 2016, NVIDIA Corporation.  All rights reserved.
+ * Copyright (c) 2008 - 2020, NVIDIA Corporation.  All rights reserved.
  *
  * NVIDIA Corporation and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
@@ -199,6 +199,24 @@ typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYWAYLANDBUFFERWL) (EGLDisplay dpy, vo
 #define EGL_WL_wayland_eglstream 1
 #define EGL_WAYLAND_EGLSTREAM_WL             0x334B
 #endif /* EGL_WL_wayland_eglstream */
+
+#ifndef EGL_NV_stream_consumer_eglimage
+#define EGL_NV_stream_consumer_eglimage 1
+#define EGL_STREAM_CONSUMER_IMAGE_NV         0x3373
+#define EGL_STREAM_IMAGE_ADD_NV              0x3374
+#define EGL_STREAM_IMAGE_REMOVE_NV           0x3375
+#define EGL_STREAM_IMAGE_AVAILABLE_NV        0x3376
+#ifdef EGL_EGLEXT_PROTOTYPES
+EGLAPI EGLBoolean EGLAPIENTRY eglStreamImageConsumerConnectNV(EGLDisplay dpy, EGLStreamKHR stream, EGLint num_modifiers, EGLuint64KHR* modifiers, EGLAttrib* aux);
+EGLAPI EGLBoolean EGLAPIENTRY eglQueryStreamConsumerEventNV(EGLDisplay dpy, EGLStreamKHR stream, EGLTime timeout, EGLenum *event, EGLAttrib *aux);
+EGLAPI EGLBoolean EGLAPIENTRY eglStreamAcquireImageNV(EGLDisplay dpy, EGLStreamKHR stream, EGLImage *pImage, EGLSync sync);
+EGLAPI EGLBoolean EGLAPIENTRY eglStreamReleaseImageNV(EGLDisplay dpy, EGLStreamKHR stream, EGLImage image, EGLSync sync);
+#endif
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLSTREAMIMAGECONSUMERCONNECTNV) (EGLDisplay dpy, EGLStreamKHR stream, EGLint num_modifiers, EGLuint64KHR* modifiers, EGLAttrib* aux);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYSTREAMCONSUMEREVENTNV) (EGLDisplay dpy, EGLStreamKHR stream, EGLTime timeout, EGLenum *event, EGLAttrib *aux);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLSTREAMACQUIREIMAGENV) (EGLDisplay dpy, EGLStreamKHR stream, EGLImage *pImage, EGLSync sync);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLSTREAMRELEASEIMAGENV) (EGLDisplay dpy, EGLStreamKHR stream, EGLImage image, EGLSync sync);
+#endif /* EGL_NV_stream_consumer_eglimage */
 
 #ifdef __cplusplus
 }

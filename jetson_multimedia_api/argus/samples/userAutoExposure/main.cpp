@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,6 +37,7 @@
 #include "CommonOptions.h"
 #include <algorithm>
 #include <math.h>
+#include <Argus/Ext/BlockingSessionCameraProvider.h>
 
 #define USER_AUTO_EXPOSURE_PRINT(...) \
         (printf("USER AUTO EXPOSURE SAMPLE: " __VA_ARGS__),fflush(stdout))
@@ -166,7 +167,13 @@ static bool execute(const UserAutoExposureSampleOptions& options)
         ORIGINATE_ERROR("Selected sensor mode not available");
 
     // Create the CaptureSession using the selected device.
-    UniqueObj<CaptureSession> captureSession(iCameraProvider->createCaptureSession(cameraDevice));
+    Ext::IBlockingSessionCameraProvider *iBlockingSessionCameraProvider =
+            interface_cast<Ext::IBlockingSessionCameraProvider>(appTearDown.m_cameraProvider);
+    EXIT_IF_NULL(iBlockingSessionCameraProvider,
+                    "Cannot get blocking session camera provider interface");
+
+    UniqueObj<CaptureSession> captureSession(
+        iBlockingSessionCameraProvider->createBlockingCaptureSession(cameraDevice));
     ICaptureSession* iSession = interface_cast<ICaptureSession>(captureSession);
     EXIT_IF_NULL(iSession, "Cannot get Capture Session Interface");
 
@@ -264,7 +271,12 @@ static bool execute(const UserAutoExposureSampleOptions& options)
         iBayerAverageMapSettings->setBayerAverageMapEnable(true);
     }
 
-    EXIT_IF_NOT_OK(iSession->repeat(request.get()), "Unable to submit repeat() request");
+    Argus::Status status = STATUS_OK;
+
+    for (int index = 0; index < 100; index++)
+    {
+        iSession->capture(request.get(), 1000000000, &status);
+    }
 
     // Set tolerance difference from the target before making adjustments.
     const Range<float> targetRange(TARGET_EXPOSURE_LEVEL - TARGET_EXPOSURE_LEVEL_RANGE_TOLERANCE,
@@ -475,7 +487,7 @@ static bool execute(const UserAutoExposureSampleOptions& options)
                  * The modified request is re-submitted to terminate the previous repeat() with
                  * the old settings and begin captures with the new settings
                  */
-                iSession->repeat(request.get());
+                iSession->capture(request.get());
             } else if (iEvent->getEventType() == EVENT_TYPE_CAPTURE_STARTED) {
                 /* ToDo: Remove the empty after the bug is fixed */
                 continue;

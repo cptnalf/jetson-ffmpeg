@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -339,6 +339,7 @@ set_defaults (context_t *ctx)
     ctx->set_gainrange = false;
     ctx->set_exptimerange = false;
     ctx->set_colorsaturation = false;
+    ctx->enable_metadata = false;
 
     ctx->ctrls.autowhitebalance_mode = DEFAULT_ARGUS_AWB_MODE;
     ctx->ctrls.denoise_mode = DEFAULT_ARGUS_DENOISE_MODE;
@@ -642,6 +643,9 @@ dq_buffer(context_t * ctx, struct v4l2_buffer &v4l2_buf, Buffer ** buffer,
 
         if (ret_val == 0)
         {
+            if (ctx->enable_metadata)
+                get_metadata(ctx->fd, v4l2_buf.index);
+
             pthread_mutex_lock(&ctx->queue_lock);
             switch(v4l2_buf.memory)
             {

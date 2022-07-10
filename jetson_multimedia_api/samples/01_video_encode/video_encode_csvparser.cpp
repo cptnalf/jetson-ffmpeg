@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -65,8 +65,13 @@ print_help(void)
             "\t-p <profile>          Encoding Profile [Default = baseline]\n"
             "\t-l <level>            Encoding Level [Default set by the library]\n"
             "\t-rc <rate-control>    Ratecontrol mode [Default = cbr]\n"
-            "\t--elossless           Enable Lossless encoding [Default = disabled,"
-                                     "Option applicable only with YUV444 input and H264 encoder]\n"
+            "\t--elossless           Enable Lossless encoding [Default = disabled,\n"
+            "\t                      Option applicable only with YUV444 input]\n"
+            "\t-cf <val>             Set chroma factor IDC for H265. [Default = 1, set by encoder]\n"
+            "\t-bd <bit-depth>       Bit-depth (Supported values are 8 and 10) [Default 8]\n"
+            "\t                      Note: For 10-bit, YUV must be MSB aligned\n"
+            "\t--sp                  Encode frames from semiplanar yuv input. [Default = disabled]\n"
+            "\t                      Right now, application only supports NV12, NV24, NV24_10LE and P010_10LE\n"
             "\t--max-perf            Enable maximum Performance \n"
             "\t-ifi <interval>       I-frame Interval [Default = 30]\n"
             "\t-idri <interval>      IDR Interval [Default = 256]\n"
@@ -94,6 +99,7 @@ print_help(void)
             "\t-rt <cordinate>       Reconstructed surface Top cordinate [Default = 0]\n\n"
             "\t-rw <val>             Reconstructed surface width\n\n"
             "\t-rh <val>             Reconstructed surface height\n\n"
+            "\t-sar <width> <height> Sample Aspect Ratio parameters [Default = 0 0]\n\n"
             "\t-rcrcf <reconref_file_path> Specify recon crc reference param file\n\n"
             "\t--report-metadata     Print encoder output metadata\n"
             "\t--blocking-mode <val> Set blocking mode, 0 is non-blocking, 1 for blocking (Default) \n\n"
@@ -103,6 +109,7 @@ print_help(void)
             "\t--eroi                Enable ROI [Default = disabled]\n\n"
             "\t-roi <roi_file_path>  Specify roi param file\n\n"
             "\t--erps                Enable External RPS [Default = disabled]\n\n"
+            "\t--svc                 Enable RPS Three Layer SVC [Default = disabled]\n\n"
             "\t--egdr                Enable GDR [Default = disabled]\n\n"
             "\t--gif                 Enable Gaps in FrameNum [Default = disabled]\n\n"
             "\t-fnb <num_bits>       H264 FrameNum bits [Default = 0]\n\n"
@@ -131,8 +138,9 @@ print_help(void)
             "      2   -2   34  33  16  19  -3  68  68  16  16\n"
             "      1   -5   40  40  40  40\n"
             "      3   -4   34  34  16  16  -5  70  70  18  18  -3  100  100  34  34\n"
+            "NOTE: YUV frames must be MSB aligned for 10-bit encoding\n"
             "Supported Encoding profiles for H.264:\n"
-            "\tbaseline\tmain\thigh\n"
+            "\tbaseline\tmain\thigh\thigh444\n"
             "Supported Encoding profiles for H.265:\n"
             "\tmain\n"
             "\tmain10\n\n"
@@ -203,6 +211,9 @@ get_encoder_profile_h264(char *arg)
 
     if (!strcmp(arg, "high"))
         return V4L2_MPEG_VIDEO_H264_PROFILE_HIGH;
+
+    if (!strcmp(arg, "high444"))
+        return V4L2_MPEG_VIDEO_H264_PROFILE_HIGH_444_PREDICTIVE;
     return -1;
 }
 
@@ -438,6 +449,10 @@ parse_csv_args(context_t * ctx, int argc, char *argv[])
         {
             ctx->externalRPS = true;
         }
+        else if (!strcmp(arg, "--svc"))
+        {
+            ctx->RPS_threeLayerSvc = true;
+        }
         else if(!strcmp(arg, "--max-perf"))
         {
             ctx->max_perf = 1;
@@ -607,6 +622,26 @@ parse_csv_args(context_t * ctx, int argc, char *argv[])
         else if (!strcmp(arg, "--elossless"))
         {
             ctx->enableLossless = true;
+        }
+        else if (!strcmp(arg, "-cf"))
+        {
+            argp++;
+            CHECK_OPTION_VALUE(argp);
+            ctx->chroma_format_idc = (uint8_t) atoi(*argp);
+            CSV_PARSE_CHECK_ERROR(((ctx->chroma_format_idc != 1) && (ctx->chroma_format_idc != 3)),
+                    "Only 1 or 3 supported");
+        }
+        else if (!strcmp(arg, "-bd"))
+        {
+            argp++;
+            CHECK_OPTION_VALUE(argp);
+            ctx->bit_depth = (uint8_t) atoi(*argp);
+            CSV_PARSE_CHECK_ERROR(((ctx->bit_depth != 8) && (ctx->bit_depth != 10)),
+                    "Only 8/10-Bit depth supported");
+        }
+        else if (!strcmp(arg, "--sp"))
+        {
+            ctx->is_semiplanar = true;
         }
         else if (!strcmp(arg, "-rpc"))
         {
@@ -833,6 +868,17 @@ parse_csv_args(context_t * ctx, int argc, char *argv[])
             ctx->rh = atoi(*argp);
             CSV_PARSE_CHECK_ERROR(ctx->rh <= 0, "Reconstructed surface height should be > 0");
         }
+        else if (!strcmp(arg, "-sar"))
+        {
+            argp++;
+            CHECK_OPTION_VALUE(argp);
+            ctx->sar_width = atoi(*argp);
+            CSV_PARSE_CHECK_ERROR(ctx->sar_width <= 0, "SAR width should be > 0");
+            argp++;
+            CHECK_OPTION_VALUE(argp);
+            ctx->sar_height = atoi(*argp);
+            CSV_PARSE_CHECK_ERROR(ctx->fps_d == 0, "SAR height should be > 0");
+        }
         else if (!strcmp(arg, "-rcrcf"))
         {
             argp++;
@@ -890,6 +936,25 @@ parse_csv_args(context_t * ctx, int argc, char *argv[])
         else
         {
             CSV_PARSE_CHECK_ERROR(ctx->out_file_path, "Unknown option " << arg);
+        }
+    }
+    if (ctx->externalRPS && ctx->RPS_threeLayerSvc)
+    {
+        ctx->rps_par.m_numTemperalLayers = 3;
+        ctx->rps_par.nActiveRefFrames = 0;
+
+        ctx->input_metadata = true;
+        ctx->report_metadata = true;
+        ctx->num_reference_frames = 2;
+        ctx->iframe_interval = ctx->idr_interval = 32;
+        if (ctx->encoder_pixfmt == V4L2_PIX_FMT_H264)
+        {
+            ctx->bGapsInFrameNumAllowed = false;
+            ctx->nH264FrameNumBits = 8;
+        }
+        else if (ctx->encoder_pixfmt == V4L2_PIX_FMT_H265)
+        {
+            ctx->nH265PocLsbBits = 8;
         }
     }
 

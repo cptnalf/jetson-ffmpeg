@@ -52,7 +52,7 @@ namespace Argus
 
 /**
  * @ref ArgusBuffer type that wraps an EGLImage resource.
- * @ingroup ArgusBufferBuffer ArgusBufferBufferSettings
+ * @ingroup ArgusBufferBufferSettings
  */
 DEFINE_UUID(BufferType, BUFFER_TYPE_EGL_IMAGE, c723d966,5231,11e7,9598,18,00,20,0c,9a,66);
 

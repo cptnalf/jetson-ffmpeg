@@ -49,17 +49,29 @@ NativeBuffer::~NativeBuffer()
 /* static */
 NativeBuffer* NativeBuffer::create(const Argus::Size2D<uint32_t>& size, ColorFormat colorFormat)
 {
-    // Currently only support YUV420 generic format
-    if (colorFormat != COLOR_FORMAT_YUV420)
-        return NULL;
-
+    // Currently only support YUV420 and YUV444 generic format
+    if (colorFormat == COLOR_FORMAT_YUV420)
 #if defined(ANDROID)
-    return NvRmSurfaceBuffer::create(size, NvColorFormat_U8_V8);
+        return NvRmSurfaceBuffer::create(size, NvColorFormat_U8_V8);
 #elif defined(NVMMAPI_SUPPORTED)
-    return NvNativeBuffer::create(size, NvBufferColorFormat_NV12);
+        return NvNativeBuffer::create(size, NvBufferColorFormat_NV12);
 #else
-    return NULL;
+        return NULL;
 #endif
+
+    else if (colorFormat == COLOR_FORMAT_YUV444)
+#if defined(NVMMAPI_SUPPORTED)
+        return NvNativeBuffer::create(size, NvBufferColorFormat_NV24);
+#else
+        return NULL;
+#endif
+
+    else
+    {
+        printf("Only YUV420 and YUV444 Semiplanar formats are supported");
+        return NULL;
+    }
+
 }
 
 }; // namespace ArgusSamples

@@ -54,7 +54,7 @@ static const int FILTER_NUM = 6;
 // Logger for TRT info/warning/errors
 class Logger : public ILogger
 {
-    void log(Severity severity, const char* msg) override
+    void log(Severity severity, const char* msg) noexcept override
     {
         // suppress info-level messages
         if (severity == Logger::Severity::kINTERNAL_ERROR ||
@@ -69,7 +69,7 @@ class Profiler : public IProfiler
     typedef std::pair<std::string, float> Record;
     std::vector<Record> mProfile;
 
-    virtual void reportLayerTime(const char* layerName, float ms)
+    virtual void reportLayerTime(const char* layerName, float ms) noexcept
     {
         auto record = std::find_if(mProfile.begin(), mProfile.end(),
                         [&](const Record& r){ return r.first == layerName; });
@@ -107,14 +107,14 @@ class Int8EntropyCalibrator : public IInt8EntropyCalibrator
         }
 
         //We don't support int8 calibration till now[ToDo].
-        int getBatchSize() const override { return 0 /*mBF.m_Dims.n()*/; }
+        int getBatchSize() const noexcept override { return 0 /*mBF.m_Dims.n()*/; }
 
-        bool getBatch(void* bindings[], const char* names[], int nbBindings) override
+        bool getBatch(void* bindings[], const char* names[], int nbBindings) noexcept override
         {
             return false;
         }
 
-        const void* readCalibrationCache(size_t& length) override
+        const void* readCalibrationCache(size_t& length) noexcept override
         {
             mCalibrationCache.clear();
 	    const char* CACHE_PATH = mOnnxModel ? "../../data/Model/resnet10/CalibrationTable_ONNX"
@@ -128,7 +128,7 @@ class Int8EntropyCalibrator : public IInt8EntropyCalibrator
             return length ? &mCalibrationCache[0] : nullptr;
         }
 
-        void writeCalibrationCache(const void* cache, size_t length) override
+        void writeCalibrationCache(const void* cache, size_t length) noexcept override
         {
             std::ofstream output("CalibrationTable", std::ios::binary);
             output.write(reinterpret_cast<const char*>(cache), length);
@@ -515,14 +515,14 @@ TRT_Context::caffeToTRTModel(const string& deployfile, const string& modelfile)
     assert(engine);
 
     // we don't need the network any more, and we can destroy the parser
-    network->destroy();
-    parser->destroy();
-    config->destroy();
+    delete network;
+    delete parser;
+    delete config;
 
     // serialize the engine, then close everything down
     trtModelStream = engine->serialize();
-    engine->destroy();
-    builder->destroy();
+    delete engine;
+    delete builder;
     shutdownProtobufLibrary();
 }
 
@@ -600,14 +600,15 @@ TRT_Context::onnxToTRTModel(const string& modelfile)
     assert(engine);
 
     // we don't need the network any more, and we can destroy the parser
-    network->destroy();
-    parser->destroy();
-    config->destroy();
+    delete network;
+    delete parser;
+    delete config;
+
 
     // serialize the engine, then close everything down
     trtModelStream = engine->serialize();
-    engine->destroy();
-    builder->destroy();
+    delete engine;
+    delete builder;
     shutdownProtobufLibrary();
 }
 
@@ -678,9 +679,9 @@ void
 TRT_Context::destroyTrtContext(bool bUseCPUBuf)
 {
     releaseMemory(bUseCPUBuf);
-    context->destroy();
-    engine->destroy();
-    runtime->destroy();
+    delete context;
+    delete engine;
+    delete runtime;
 }
 
 void

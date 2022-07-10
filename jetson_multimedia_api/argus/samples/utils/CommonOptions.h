@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2018-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -61,6 +61,7 @@ public:
         Option_R_WindowRect   = (1 << 2),
         Option_T_CaptureTime  = (1 << 3),
         Option_F_FrameCount   = (1 << 4),
+        Option_P_PixelFormat  = (1 << 5),
 
         /// These options are always enabled in the CommonOptions.
         Option_L_ListDevices    = (1 << 28),
@@ -105,6 +106,11 @@ public:
         assert(m_optionEnables & Option_F_FrameCount);
         return m_frameCount.get();
     }
+    uint32_t pixelFormatIndex() const
+    {
+        assert(m_optionEnables & Option_P_PixelFormat);
+        return strcmp(m_pixelFormatIndex.get().c_str(), "yuv420")==0;
+    }
     const Argus::Rectangle<uint32_t>& windowRect() const
     {
         assert(m_optionEnables & Option_R_WindowRect);
@@ -119,6 +125,7 @@ protected:
     uint32_t m_optionEnables;
     Value<uint32_t> m_cameraDeviceIndex;
     Value<uint32_t> m_sensorModeIndex;
+    Value<std::string> m_pixelFormatIndex;
     Value<uint32_t> m_captureTime;
     Value<uint32_t> m_frameCount;
     Value<Argus::Rectangle<uint32_t> > m_windowRect;

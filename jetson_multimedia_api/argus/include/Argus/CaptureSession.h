@@ -78,9 +78,13 @@ public:
     virtual Status cancelRequests() = 0;
 
     /**
-     * Submits a single capture request to the request queue.
-     * The runtime will queue a copy of the request. The client can
-     * submit the same request instance in a future call.
+     * Submits a single capture request.
+     * For blocking capture session (created by ICameraProvider::createBlockingCaptureSession),
+     * it will wait until the request is accepted by lower level driver.
+     * For non-blocking capture session (created by ICameraProvider::createCaptureSession),
+     * it will queue a copy of the request to a queue and return.
+     *
+     * The client can submit the same request instance in a future call.
      * The request will be copied by the runtime.
      *
      * @param[in] request Parameters for the capture.
@@ -99,8 +103,13 @@ public:
                              Status* status = NULL) = 0;
 
     /**
-     * Submits a burst to the request queue.
-     * The runtime will queue a copy of the burst.
+     * Submits a burst of requests.
+     *
+     * For blocking capture session (created by ICameraProvider::createBlockingCaptureSession),
+     * it will wait until the first request is accepted by lower level driver.
+     * For non-blocking capture session (created by ICameraProvider::createCaptureSession),
+     * it will queue a copy of the requests to a queue and return.
+
      * The runtime will either accept the entire burst or refuse it completely
      * (that is, no partial bursts will be accepted).
      *

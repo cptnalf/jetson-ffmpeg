@@ -110,7 +110,6 @@ Argus::SensorMode* ArgusHelpers::getSensorMode(Argus::CameraDevice* cameraDevice
         }
         return NULL;
     }
-
     return sensorModes[sensorModeIndex];
 }
 
@@ -201,11 +200,32 @@ void ArgusHelpers::printSensorModeInfo(Argus::SensorMode* sensorMode, const char
     {
         Argus::Size2D<uint32_t> resolution = iSensorMode->getResolution();
         printf("%sResolution:         %ux%u\n", indent, resolution.width(), resolution.height());
-        Argus::Range<uint64_t> u64Range = iSensorMode->getExposureTimeRange();
-        printf("%sExposureTimeRange:  [%llu, %llu]\n", indent,
+
+        Argus::Range<float> hdrRatioRange = iSensorMode->getHdrRatioRange();
+        printf("%sHdrRatioRange:  [%f, %f]\n", indent,
+                static_cast<float>(hdrRatioRange.min()),
+                static_cast<float>(hdrRatioRange.max()));
+
+        if (hdrRatioRange.max() > 1.f)
+        {
+            Argus::Range<uint64_t> u64Range = iSensorMode->getExposureTimeRange();
+            printf("%sExposureTimeRange for long exposure::  [%llu, %llu]\n", indent,
                 static_cast<unsigned long long>(u64Range.min()),
                 static_cast<unsigned long long>(u64Range.max()));
-        u64Range = iSensorMode->getFrameDurationRange();
+
+            printf("%sExposureTimeRange for short exposure: [%llu, %llu]\n", indent,
+                static_cast<unsigned long long>(u64Range.min() / hdrRatioRange.max()),
+                static_cast<unsigned long long>(u64Range.max() / hdrRatioRange.min()));
+        }
+        else
+        {
+            Argus::Range<uint64_t> u64Range = iSensorMode->getExposureTimeRange();
+            printf("%sExposureTimeRange:  [%llu, %llu]\n", indent,
+                static_cast<unsigned long long>(u64Range.min()),
+                static_cast<unsigned long long>(u64Range.max()));
+        }
+
+        Argus::Range<uint64_t> u64Range = iSensorMode->getFrameDurationRange();
         printf("%sFrameDurationRange: [%llu, %llu]\n", indent,
                 static_cast<unsigned long long>(u64Range.min()),
                 static_cast<unsigned long long>(u64Range.max()));

@@ -51,7 +51,8 @@ public:
      */
     enum ColorFormat
     {
-        COLOR_FORMAT_YUV420
+        COLOR_FORMAT_YUV420,
+        COLOR_FORMAT_YUV444
     };
 
     /**

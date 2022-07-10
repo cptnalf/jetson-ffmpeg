@@ -120,6 +120,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a07c3812c182fe139ef9b6a60804be398"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the image resolution, in pixels.  <a href="#a07c3812c182fe139ef9b6a60804be398"></a><br/></td></tr>
 <tr class="memitem:a2b8b2f9aa1fab2217a7afa651ba902d0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1Range.html">Range</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#a2b8b2f9aa1fab2217a7afa651ba902d0">getExposureTimeRange</a> () const =0</td></tr>
 <tr class="memdesc:a2b8b2f9aa1fab2217a7afa651ba902d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the supported exposure time range (in nanoseconds).  <a href="#a2b8b2f9aa1fab2217a7afa651ba902d0"></a><br/></td></tr>
+<tr class="memitem:ae0dcfe692f52c2059f9bafd588ab0a0c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1Range.html">Range</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#ae0dcfe692f52c2059f9bafd588ab0a0c">getHdrRatioRange</a> () const =0</td></tr>
+<tr class="memdesc:ae0dcfe692f52c2059f9bafd588ab0a0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the hdr ratio range, it is the ratio of long exposure vs short exposure.  <a href="#ae0dcfe692f52c2059f9bafd588ab0a0c"></a><br/></td></tr>
 <tr class="memitem:a1c0962fe8bd2c5a562e799766e7f5d75"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1Range.html">Range</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#a1c0962fe8bd2c5a562e799766e7f5d75">getFrameDurationRange</a> () const =0</td></tr>
 <tr class="memdesc:a1c0962fe8bd2c5a562e799766e7f5d75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the supported frame duration range (in nanoseconds).  <a href="#a1c0962fe8bd2c5a562e799766e7f5d75"></a><br/></td></tr>
 <tr class="memitem:abe32fa7a650854b01764dfe73a42043c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1Range.html">Range</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#abe32fa7a650854b01764dfe73a42043c">getAnalogGainRange</a> () const =0</td></tr>
@@ -130,6 +132,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:abfb8ec340a93413809c6554a307ddde9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the bit depth of the image returned from the image sensor in the current mode.  <a href="#abfb8ec340a93413809c6554a307ddde9"></a><br/></td></tr>
 <tr class="memitem:ac1384dca87b03da766bdd6920847b8b6"><td class="memItemLeft" align="right" valign="top">virtual SensorModeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#ac1384dca87b03da766bdd6920847b8b6">getSensorModeType</a> () const =0</td></tr>
 <tr class="memdesc:ac1384dca87b03da766bdd6920847b8b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the type of the sensor (Bayer, Yuv, etc.) and key modes of operation which are enabled in the sensor mode (Wide-dynamic range, Piecewise Linear Compressed output, etc.)  <a href="#ac1384dca87b03da766bdd6920847b8b6"></a><br/></td></tr>
+<tr class="memitem:aeb37c9caa9c69ac8df524afb0ef9bdc1"><td class="memItemLeft" align="right" valign="top">virtual BayerPhase&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#aeb37c9caa9c69ac8df524afb0ef9bdc1">getBayerPhase</a> () const =0</td></tr>
+<tr class="memdesc:aeb37c9caa9c69ac8df524afb0ef9bdc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the bayer phase of Bayer mode.  <a href="#aeb37c9caa9c69ac8df524afb0ef9bdc1"></a><br/></td></tr>
 <tr class="memitem:a9fa64d4919b04838c696e6835f6a7b11"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ISensorMode.html#a9fa64d4919b04838c696e6835f6a7b11">isBufferFormatSupported</a> (<a class="el" href="classArgus_1_1Buffer.html">Buffer</a> *buffer) const =0</td></tr>
 <tr class="memdesc:a9fa64d4919b04838c696e6835f6a7b11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the buffer provided is supported by the camera device.  <a href="#a9fa64d4919b04838c696e6835f6a7b11"></a><br/></td></tr>
 </table><table class="memberdecls">
@@ -147,7 +151,7 @@ Protected Member Functions</h2></td></tr>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classArgus_1_1Interface.html" title="The top-level interface class.">Interface</a> to the core properties of a <a class="el" href="classArgus_1_1SensorMode.html">SensorMode</a>. </p>
 
-<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00210">210</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
+<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00223">223</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="abe6ea096e0c725aebf9634ef9f243285"></a>
 <div class="memitem">
@@ -170,7 +174,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00264">264</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
+<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00291">291</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
 
 </div>
 </div>
@@ -197,6 +201,31 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the supported analog gain range. </p>
+
+</div>
+</div>
+<a class="anchor" id="aeb37c9caa9c69ac8df524afb0ef9bdc1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual BayerPhase Argus::ISensorMode::getBayerPhase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describes the bayer phase of Bayer mode. </p>
 
 </div>
 </div>
@@ -247,6 +276,32 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the supported frame duration range (in nanoseconds). </p>
+
+</div>
+</div>
+<a class="anchor" id="ae0dcfe692f52c2059f9bafd588ab0a0c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classArgus_1_1Range.html">Range</a>&lt;float&gt; Argus::ISensorMode::getHdrRatioRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the hdr ratio range, it is the ratio of long exposure vs short exposure. </p>
+<p>When min and/or max is greater than 1, long exposure range is given by <a class="el" href="classArgus_1_1ISensorMode.html#a2b8b2f9aa1fab2217a7afa651ba902d0" title="Returns the supported exposure time range (in nanoseconds).">getExposureTimeRange()</a> and short exposure range is computed as following: short exposure min = <a class="el" href="classArgus_1_1ISensorMode.html#a2b8b2f9aa1fab2217a7afa651ba902d0" title="Returns the supported exposure time range (in nanoseconds).">getExposureTimeRange()</a>.min() / <a class="el" href="classArgus_1_1ISensorMode.html#ae0dcfe692f52c2059f9bafd588ab0a0c" title="Returns the hdr ratio range, it is the ratio of long exposure vs short exposure.">getHdrRatioRange()</a>.max() short exposure max = <a class="el" href="classArgus_1_1ISensorMode.html#a2b8b2f9aa1fab2217a7afa651ba902d0" title="Returns the supported exposure time range (in nanoseconds).">getExposureTimeRange()</a>.max() / <a class="el" href="classArgus_1_1ISensorMode.html#ae0dcfe692f52c2059f9bafd588ab0a0c" title="Returns the hdr ratio range, it is the ratio of long exposure vs short exposure.">getHdrRatioRange()</a>.min(). </p>
 
 </div>
 </div>
@@ -373,7 +428,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00213">213</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
+<p>Definition at line <a class="el" href="CameraDevice_8h_source.html#l00226">226</a> of file <a class="el" href="CameraDevice_8h_source.html">CameraDevice.h</a>.</p>
 
 </div>
 </div>
@@ -409,7 +464,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:56 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:50 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

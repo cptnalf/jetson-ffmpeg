@@ -118,7 +118,7 @@ Inheritance diagram for Argus::ICaptureMetadata:</div>
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4d9a04079b2060c0bdcd23f8969bcdc8"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#a4d9a04079b2060c0bdcd23f8969bcdc8">getCaptureId</a> () const =0</td></tr>
-<tr class="memdesc:a4d9a04079b2060c0bdcd23f8969bcdc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the capture id (the value returned from <a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8" title="Submits a single capture request to the request queue.">ICaptureSession::capture()</a>) of the capture that generated this metadata.  <a href="#a4d9a04079b2060c0bdcd23f8969bcdc8"></a><br/></td></tr>
+<tr class="memdesc:a4d9a04079b2060c0bdcd23f8969bcdc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the capture id (the value returned from <a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8" title="Submits a single capture request.">ICaptureSession::capture()</a>) of the capture that generated this metadata.  <a href="#a4d9a04079b2060c0bdcd23f8969bcdc8"></a><br/></td></tr>
 <tr class="memitem:a84ba48ca390cf19e816c0f5c3b5b143c"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#a84ba48ca390cf19e816c0f5c3b5b143c">getClientData</a> () const =0</td></tr>
 <tr class="memdesc:a84ba48ca390cf19e816c0f5c3b5b143c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the <code>clientData</code> value for the <a class="el" href="classArgus_1_1Request.html">Request</a> used in the capture that generated this metadata.  <a href="#a84ba48ca390cf19e816c0f5c3b5b143c"></a><br/></td></tr>
 <tr class="memitem:a6a29343fc48af79064fab6d5e390cce0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classArgus_1_1InterfaceProvider.html">InterfaceProvider</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#a6a29343fc48af79064fab6d5e390cce0">getStreamMetadata</a> (const <a class="el" href="classArgus_1_1OutputStream.html">OutputStream</a> *stream) const =0</td></tr>
@@ -137,6 +137,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a919f4bf191780091e046a1d33d356c36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the state of AE when it ran for this capture.  <a href="#a919f4bf191780091e046a1d33d356c36"></a><br/></td></tr>
 <tr class="memitem:a129a230589b06db7a4ccb4e76cfc6771"><td class="memItemLeft" align="right" valign="top">virtual AeFlickerState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#a129a230589b06db7a4ccb4e76cfc6771">getFlickerState</a> () const =0</td></tr>
 <tr class="memdesc:a129a230589b06db7a4ccb4e76cfc6771"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the flicker state of this capture.  <a href="#a129a230589b06db7a4ccb4e76cfc6771"></a><br/></td></tr>
+<tr class="memitem:a272fea91d57891ecd774d38701fd045a"><td class="memItemLeft" align="right" valign="top">virtual int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#a272fea91d57891ecd774d38701fd045a">getAperturePosition</a> () const =0</td></tr>
+<tr class="memdesc:a272fea91d57891ecd774d38701fd045a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the aperture position.  <a href="#a272fea91d57891ecd774d38701fd045a"></a><br/></td></tr>
 <tr class="memitem:aabc2a04cf17cd231fe41f925c1bf905c"><td class="memItemLeft" align="right" valign="top">virtual int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#aabc2a04cf17cd231fe41f925c1bf905c">getFocuserPosition</a> () const =0</td></tr>
 <tr class="memdesc:aabc2a04cf17cd231fe41f925c1bf905c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the focuser position used for this capture (in focuser steps).  <a href="#aabc2a04cf17cd231fe41f925c1bf905c"></a><br/></td></tr>
 <tr class="memitem:a1dcf35b95160f8f636815fa0ff6da133"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgus_1_1ICaptureMetadata.html#a1dcf35b95160f8f636815fa0ff6da133">getAwbCct</a> () const =0</td></tr>
@@ -223,7 +225,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CaptureMetadata_8h_source.html#l00396">396</a> of file <a class="el" href="CaptureMetadata_8h_source.html">CaptureMetadata.h</a>.</p>
+<p>Definition at line <a class="el" href="CaptureMetadata_8h_source.html#l00401">401</a> of file <a class="el" href="CaptureMetadata_8h_source.html">CaptureMetadata.h</a>.</p>
 
 </div>
 </div>
@@ -341,6 +343,31 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns:</dt><dd>success/status of the call. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a272fea91d57891ecd774d38701fd045a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Argus::ICaptureMetadata::getAperturePosition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the aperture position. </p>
 
 </div>
 </div>
@@ -499,7 +526,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the current AWB WB estimate as a vector of NUM_AWB_WB_ESTIMATE_ELEMENTS values. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Document the meaning of an AWB WB estimate.</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Document the meaning of an AWB WB estimate.</dd></dl>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">estimate</td><td>A vector that will be populated with the AWB WB estimates.</td></tr>
@@ -582,7 +609,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the capture id (the value returned from <a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8" title="Submits a single capture request to the request queue.">ICaptureSession::capture()</a>) of the capture that generated this metadata. </p>
+<p>Returns the capture id (the value returned from <a class="el" href="classArgus_1_1ICaptureSession.html#a3e02e8605e5ef5148cdbe79c26cf1fa8" title="Submits a single capture request.">ICaptureSession::capture()</a>) of the capture that generated this metadata. </p>
 
 </div>
 </div>
@@ -768,7 +795,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the time it took to integrate this capture (in nanoseconds). </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Provide a more precise description of frame duration. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Provide a more precise description of frame duration. </dd></dl>
 
 </div>
 </div>
@@ -1180,7 +1207,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:56 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:50 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

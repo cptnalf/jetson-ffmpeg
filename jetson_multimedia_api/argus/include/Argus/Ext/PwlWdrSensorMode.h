@@ -43,7 +43,7 @@ namespace Argus
 /**
  * Adds extra functionalities for the Piecewise Linear (PWL) Wide Dynamic
  * Range (WDR) sensor mode type. It introduces one new interface:
- *   - IPwlWdrSensorMode; returns a list of normalized float coordinates (x,y) that define
+ *   - Ext::IPwlWdrSensorMode; returns a list of normalized float coordinates (x,y) that define
  *                        the PWL compression curve used in the PWL WDR mode. This PWL compression
  *                        curve is used by the sensor to compress WDR pixel values before sending
  *                        them over CSI. This is done to save bandwidth for data transmission over

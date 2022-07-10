@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -574,6 +574,8 @@ query_and_set_capture(context_t * ctx)
     int error = 0;
     uint32_t window_width;
     uint32_t window_height;
+    uint32_t sar_width;
+    uint32_t sar_height;
     NvBufferCreateParams input_params = {0};
     NvBufferCreateParams cParams = {0};
 
@@ -594,6 +596,10 @@ query_and_set_capture(context_t * ctx)
         << endl;
     ctx->display_height = crop.c.height;
     ctx->display_width = crop.c.width;
+
+    /* Get the Sample Aspect Ratio (SAR) width and height */
+    ret = dec->getSAR(sar_width, sar_height);
+    cout << "Video SAR width: " << sar_width << " SAR height: " << sar_height << endl;
 #ifdef USE_NVBUF_TRANSFORM_API
     if(ctx->dst_dma_fd != -1)
     {
@@ -782,6 +788,10 @@ query_and_set_capture(context_t * ctx)
         cParams.payloadType = NvBufferPayload_SurfArray;
         cParams.nvbuf_tag = NvBufferTag_VIDEO_DEC;
 
+        if (format.fmt.pix_mp.pixelformat  == V4L2_PIX_FMT_NV24M)
+            cParams.colorFormat = NvBufferColorFormat_NV24;
+        else if (format.fmt.pix_mp.pixelformat  == V4L2_PIX_FMT_NV24_10LE)
+            cParams.colorFormat = NvBufferColorFormat_NV24_10LE;
         if (ctx->decoder_pixfmt == V4L2_PIX_FMT_MJPEG)
         {
             cParams.layout = NvBufferLayout_Pitch;
@@ -1020,7 +1030,7 @@ dec_capture_loop_fcn(void *arg)
         query_and_set_capture(ctx);
 
     /* Exit on error or EOS which is signalled in main() */
-    while (!(ctx->got_error || dec->isInError() || ctx->got_eos))
+    while (!(ctx->got_error || dec->isInError()))
     {
         NvBuffer *dec_buffer;
 
@@ -1052,6 +1062,11 @@ dec_capture_loop_fcn(void *arg)
             {
                 if (errno == EAGAIN)
                 {
+                    if (v4l2_buf.flags & V4L2_BUF_FLAG_LAST)
+                    {
+                        cout << "Got EoS at capture plane" << endl;
+                        goto handle_eos;
+                    }
                     usleep(1000);
                 }
                 else
@@ -1205,6 +1220,8 @@ dec_capture_loop_fcn(void *arg)
             }
         }
     }
+handle_eos:
+
 #ifndef USE_NVBUF_TRANSFORM_API
     /* Send EOS to converter */
     if (ctx->conv)
@@ -2072,6 +2089,11 @@ decode_proc(context_t& ctx, int argc, char *argv[])
                 abort(&ctx);
                 break;
             }
+            if (v4l2_buf.m.planes[0].bytesused == 0)
+            {
+                cout << "Got EoS at output plane"<< endl;
+                break;
+            }
 
             if ((v4l2_buf.flags & V4L2_BUF_FLAG_ERROR) && ctx.enable_input_metadata)
             {
@@ -2102,6 +2124,20 @@ decode_proc(context_t& ctx, int argc, char *argv[])
     }
 #endif
 
+cleanup:
+    if (ctx.blocking_mode && ctx.dec_capture_loop)
+    {
+        pthread_join(ctx.dec_capture_loop, NULL);
+    }
+    else if (!ctx.blocking_mode)
+    {
+        /* Clear the poll interrupt to get the decoder's poll thread out. */
+        ctx.dec->ClearPollInterrupt();
+        /* If Pollthread is waiting on, signal it to exit the thread. */
+        sem_post(&ctx.pollthread_sema);
+        pthread_join(ctx.dec_pollthread, NULL);
+    }
+
     if (ctx.stats)
     {
         profiler.stop();
@@ -2119,19 +2155,6 @@ decode_proc(context_t& ctx, int argc, char *argv[])
         profiler.printProfilerData(cout);
     }
 
-cleanup:
-    if (ctx.blocking_mode && ctx.dec_capture_loop)
-    {
-        pthread_join(ctx.dec_capture_loop, NULL);
-    }
-    else if (!ctx.blocking_mode)
-    {
-        /* Clear the poll interrupt to get the decoder's poll thread out. */
-        ctx.dec->ClearPollInterrupt();
-        /* If Pollthread is waiting on, signal it to exit the thread. */
-        sem_post(&ctx.pollthread_sema);
-        pthread_join(ctx.dec_pollthread, NULL);
-    }
     if(ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF)
     {
         for(int index = 0 ; index < ctx.numCapBuffers ; index++)

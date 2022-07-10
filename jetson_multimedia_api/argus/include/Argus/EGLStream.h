@@ -57,7 +57,7 @@ namespace Argus
 
 /**
  * @ref ArgusOutputStream type that generates frames as an EGLStream producer (STREAM_TYPE_EGL).
- * @ingroup ArgusOutputStream ArgusOutputStreamSettings
+ * @ingroup ArgusOutputStreamSettings
  */
 DEFINE_UUID(StreamType, STREAM_TYPE_EGL, 3a659360,5231,11e7,9598,18,00,20,0c,9a,66);
 

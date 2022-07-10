@@ -95,12 +95,12 @@ Classes</h2></td></tr>
 <p>Adds accessors for set client buffer for sensor embedded metadata. </p>
 <p>Sensor embeds private info (for example PDAF data) in sensor metadata. Client using Ext::SensorPrivateMetadata API to obtain this meta data involves several memcpy. When sensor metadata size is large, this will cause high CPU usage and affect camera performance. ISensorPrivateMetadataClientBufferRequest allow client to set a client buffer and <a class="el" href="namespaceArgus.html">Argus</a> write to it directly without extra memcpy. This is only supported in single process mode as in client-server (multiprocess) mode, client and server are in different process and their own address space.</p>
 <ul>
-<li><a class="el" href="classArgus_1_1Ext_1_1ISensorPrivateMetadataClientBufferRequest.html" title="Interface used to set client buffer for sensor private metadata for a request.">Ext::ISensorPrivateMetadataClientBufferRequest</a>: Set client buffer for private metadata. </li>
+<li><a class="el" href="classArgus_1_1Ext_1_1ISensorPrivateMetadataClientBufferRequest.html" title="Interface used to set client buffer for sensor private metadata for a request.">Ext::ISensorPrivateMetadataClientBufferRequest</a>: Sets client buffer for private metadata. </li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:56 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:50 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

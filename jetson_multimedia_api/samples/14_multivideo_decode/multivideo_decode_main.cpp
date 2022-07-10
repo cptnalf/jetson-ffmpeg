@@ -994,7 +994,7 @@ dec_capture_loop_fcn(void *arg)
         query_and_set_capture(ctx);
 
     /* Exit on error or EOS which is signalled in main() */
-    while (!(ctx->got_error || dec->isInError() || ctx->got_eos))
+    while (!(ctx->got_error || dec->isInError()))
     {
         NvBuffer *dec_buffer;
 
@@ -1026,6 +1026,11 @@ dec_capture_loop_fcn(void *arg)
             {
                 if (errno == EAGAIN)
                 {
+                    if (v4l2_buf.flags & V4L2_BUF_FLAG_LAST)
+                    {
+                        cout << "Got EoS at capture plane" << endl;
+                        goto handle_eos;
+                    }
                     usleep(1000);
                 }
                 else
@@ -1182,6 +1187,8 @@ dec_capture_loop_fcn(void *arg)
             }
         }
     }
+handle_eos:
+
 #ifndef USE_NVBUF_TRANSFORM_API
     /* Send EOS to converter */
     if (ctx->conv)
@@ -1947,6 +1954,11 @@ decode_proc(void * p_ctx)
                 abort(&ctx);
                 break;
             }
+            if (v4l2_buf.m.planes[0].bytesused == 0)
+            {
+                cout << "Got EoS at output plane"<< endl;
+                break;
+            }
 
             if ((v4l2_buf.flags & V4L2_BUF_FLAG_ERROR) &&
                     ctx.enable_input_metadata)
@@ -1979,6 +1991,20 @@ decode_proc(void * p_ctx)
     }
 #endif
 
+cleanup:
+    if (ctx.blocking_mode && ctx.dec_capture_loop)
+    {
+        pthread_join(ctx.dec_capture_loop, NULL);
+    }
+    else if (!ctx.blocking_mode)
+    {
+        /* Clear the poll interrupt to get the decoder's poll thread out. */
+        ctx.dec->ClearPollInterrupt();
+        /* If Pollthread is waiting on, signal it to exit the thread. */
+        sem_post(&ctx.pollthread_sema);
+        pthread_join(ctx.dec_pollthread, NULL);
+    }
+
     if (ctx.stats)
     {
         profiler.stop();
@@ -1999,19 +2025,6 @@ decode_proc(void * p_ctx)
         }
     }
 
-cleanup:
-    if (ctx.blocking_mode && ctx.dec_capture_loop)
-    {
-        pthread_join(ctx.dec_capture_loop, NULL);
-    }
-    else if (!ctx.blocking_mode)
-    {
-        /* Clear the poll interrupt to get the decoder's poll thread out. */
-        ctx.dec->ClearPollInterrupt();
-        /* If Pollthread is waiting on, signal it to exit the thread. */
-        sem_post(&ctx.pollthread_sema);
-        pthread_join(ctx.dec_pollthread, NULL);
-    }
     if(ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF)
     {
         for(int index = 0 ; index < ctx.numCapBuffers ; index++)

@@ -38,7 +38,7 @@ all: $(OBJS)
 
 %.o: %.cpp
 	@echo "Compiling: $<"
-	$(CPP) $(CPPFLAGS) -c $<
+	$(CPP) $(CPPFLAGS) -Wno-deprecated-declarations -c $<
 
 clean:
 	$(AT)rm -rf $(APP) $(OBJS)

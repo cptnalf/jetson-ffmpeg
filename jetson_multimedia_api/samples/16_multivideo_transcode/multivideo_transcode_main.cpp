@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -425,8 +425,9 @@ err:
   * @param buffer : NvBuffer pointer
   */
 static int
-read_decoder_input_chunk(ifstream * stream, NvBuffer * buffer)
+read_decoder_input_chunk(context_t *ctx, NvBuffer * buffer)
 {
+    ifstream *stream = ctx->in_file;
     /* Length is the size of the buffer in bytes */
     streamsize bytes_to_read = MIN(CHUNK_SIZE, buffer->planes[0].length);
 
@@ -438,6 +439,16 @@ read_decoder_input_chunk(ifstream * stream, NvBuffer * buffer)
     {
         stream->clear();
         stream->seekg(0,stream->beg);
+
+        if (ctx->seek_mode)
+        {
+            ctx->iterator_num++;
+            if (ctx->iterator_num < ctx->num_iterations)
+            {
+                stream->read((char *) buffer->planes[0].data, bytes_to_read);
+                buffer->planes[0].bytesused = stream->gcount();
+            }
+        }
     }
     return 0;
 }
@@ -506,9 +517,10 @@ read_vpx_decoder_input_chunk(context_t *ctx, NvBuffer * buffer)
   * @param ctx               : Transcoder context
   */
 static int
-read_decoder_input_nalu(ifstream * stream, NvBuffer * buffer,
-        char *parse_buffer, streamsize parse_buffer_size, context_t * ctx)
+read_decoder_input_nalu(context_t *ctx, NvBuffer * buffer,
+        char *parse_buffer, streamsize parse_buffer_size)
 {
+    ifstream *stream = ctx->in_file;
     /* Length is the size of the buffer in bytes. */
     char *buffer_ptr = (char *) buffer->planes[0].data;
     int h265_nal_unit_type;
@@ -520,10 +532,22 @@ read_decoder_input_nalu(ifstream * stream, NvBuffer * buffer,
 
     stream->read(parse_buffer, parse_buffer_size);
     bytes_read = stream->gcount();
-
     if (bytes_read == 0)
     {
-        return buffer->planes[0].bytesused = 0;
+        stream->clear();
+        stream->seekg(0,stream->beg);
+
+        if (ctx->seek_mode)
+        {
+            ctx->iterator_num++;
+            if (ctx->iterator_num < ctx->num_iterations)
+            {
+                stream->read(parse_buffer, parse_buffer_size);
+                bytes_read = stream->gcount();
+            }
+        }
+        else
+            return buffer->planes[0].bytesused = 0;
     }
 
     /* Find the first NAL unit in the buffer. */
@@ -807,6 +831,8 @@ set_defaults(context_t ** ctx, fps_stats **stream_stats, int files )
         ctx[i]->pBitStreamCrc = NULL;
         ctx[i]->dec_input_metadata = false;
         ctx[i]->stats = false;
+        ctx[i]->seek_mode = false;
+        ctx[i]->iterator_num = 0;
         ctx[i]->num_iterations = 1;
         ctx[i]->enc_output_memory_type = V4L2_MEMORY_DMABUF;
         ctx[i]->enc_capture_memory_type = V4L2_MEMORY_MMAP;
@@ -834,11 +860,12 @@ buffer_refil(void *arg)
     context_t *ctx = (context_t *) arg;
     NvVideoDecoder *dec = ctx->dec;
     NvVideoEncoder *enc = ctx->enc;
+    bool sent_eos = false;
 
     /* Set thread name for decoder Capture Plane thread. */
     pthread_setname_np(ctx->buffer_refill, "BufferRefill");
 
-    while(!ctx->stop_refill)
+    while(!ctx->stop_refill || !sent_eos)
     {
         struct v4l2_buffer v4l2_buf;
         struct v4l2_plane planes[MAX_PLANES];
@@ -857,19 +884,49 @@ buffer_refil(void *arg)
             break;
         }
 
-        if (ctx->dec_capture_plane_mem_type == V4L2_MEMORY_DMABUF)
+        if (!ctx->stop_refill)
         {
-            buffer->planes[0].fd = ctx->dmabuff_fd[v4l2_buf.index];
-            v4l2_buf.m.planes[0].m.fd = ctx->dmabuff_fd[v4l2_buf.index];
-        }
+            if (ctx->dec_capture_plane_mem_type == V4L2_MEMORY_DMABUF)
+            {
+                buffer->planes[0].fd = ctx->dmabuff_fd[v4l2_buf.index];
+                v4l2_buf.m.planes[0].m.fd = ctx->dmabuff_fd[v4l2_buf.index];
+            }
 
-        if (dec->capture_plane.qBuffer(v4l2_buf, NULL) < 0)
+            if (dec->capture_plane.qBuffer(v4l2_buf, NULL) < 0)
+            {
+                abort(ctx);
+                cerr <<
+                    "Error while queueing buffer at decoder capture plane"
+                    << endl;
+                break;
+            }
+        }
+        else
         {
-            abort(ctx);
-            cerr <<
-                "Error while queueing buffer at decoder capture plane"
-                << endl;
-            break;
+            /* Send size 0 buffer to encoder as EoS */
+            buffer = enc->output_plane.getNthBuffer(v4l2_buf.index);
+            v4l2_buf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+
+            if (ctx->enc_output_memory_type == V4L2_MEMORY_DMABUF)
+            {
+                for (uint32_t i = 0 ; i < buffer->n_planes ; i++)
+                {
+                    buffer->planes[i].fd = ctx->dmabuff_fd[v4l2_buf.index];
+                    v4l2_buf.m.planes[i].m.fd = buffer->planes[i].fd;
+                    buffer->planes[i].bytesused = 0;
+                    v4l2_buf.m.planes[i].bytesused = 0;
+                }
+            }
+
+            /* Enqueue a size 0 buffer in encoder */
+            if (ctx->enc->output_plane.qBuffer(v4l2_buf, NULL) < 0)
+            {
+                abort(ctx);
+                cerr <<
+                    "Error while queueing buffer at encoder output plane"
+                    << endl;
+            }
+            sent_eos = true;
         }
     }
 
@@ -1508,29 +1565,6 @@ dec_capture_loop_fcn(void *arg)
         }
     }
 
-    buffer = enc->output_plane.getNthBuffer(v4l2_buf.index);
-    v4l2_buf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-
-    if (ctx->enc_output_memory_type == V4L2_MEMORY_DMABUF)
-    {
-        for (uint32_t i = 0 ; i < buffer->n_planes ; i++)
-        {
-            buffer->planes[i].fd = ctx->dmabuff_fd[v4l2_buf.index];
-            v4l2_buf.m.planes[i].m.fd = buffer->planes[i].fd;
-            buffer->planes[i].bytesused = 0;
-            v4l2_buf.m.planes[i].bytesused = 0;
-        }
-    }
-
-    /* Enqueue a size 0 buffer in encoder */
-    if (ctx->enc->output_plane.qBuffer(v4l2_buf, NULL) < 0)
-    {
-        abort(ctx);
-        cerr <<
-            "Error while queueing buffer at decoder capture plane"
-            << endl;
-    }
-
     ctx->stop_refill=1;
 
     pthread_join(ctx->buffer_refill, NULL);
@@ -1609,13 +1643,13 @@ static bool transcoder_proc_blocking(context_t &ctx, bool eos, char *nalu_parse_
             if (ctx.input_nalu)
             {
                 /* read the input nal unit. */
-                read_decoder_input_nalu(ctx.in_file, buffer, nalu_parse_buffer,
-                        CHUNK_SIZE, &ctx);
+                read_decoder_input_nalu(&ctx, buffer, nalu_parse_buffer,
+                        CHUNK_SIZE);
             }
             else
             {
                 /* read the input chunks. */
-                read_decoder_input_chunk(ctx.in_file, buffer);
+                read_decoder_input_chunk(&ctx, buffer);
             }
         }
 
@@ -1797,13 +1831,13 @@ transcode_proc(void * p_ctx)
             if (ctx.input_nalu)
             {
                 /* read the input nal unit. */
-                read_decoder_input_nalu(ctx.in_file, buffer, nalu_parse_buffer,
-                        CHUNK_SIZE, &ctx);
+                read_decoder_input_nalu(&ctx, buffer, nalu_parse_buffer,
+                        CHUNK_SIZE);
             }
             else
             {
                 /* read the input chunks. */
-                read_decoder_input_chunk(ctx.in_file, buffer);
+                read_decoder_input_chunk(&ctx, buffer);
             }
         }
 
@@ -2115,7 +2149,7 @@ main(int argc, char *argv[])
                 free (stream_stats[i]);
             }
         }
-    } while((iterations != iterator_num));
+    } while(!ctx[0]->seek_mode && iterator_num < iterations);
 
     free (ctx);
 

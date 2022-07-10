@@ -201,7 +201,9 @@ ui_render_loop_fcn(void *arg)
     context_t *ctx = (context_t *) arg;
     NvDrmFB ui_fb[3];
     uint32_t plane_count = ctx->drm_renderer->getPlaneCount();
-    uint32_t plane_index = 0;
+    int32_t *plane_index = NULL;
+    int32_t primary_plane_index = -1;
+    int32_t overlay_plane_index = -1;
     /**
      * The variables 'image_pixels_array', 'image_w' and 'image_h'
      * are defined in the following auto-generated header file,
@@ -234,26 +236,34 @@ ui_render_loop_fcn(void *arg)
         }
     }
 
-    /**
-     * It's kind of trick to distinguish the platforms with plane_count.
-     * We'd better decide target window with the real hardware configuration.
-     * By default,
-     * TX1:
-     *    CRTC 0: primary(win_A), overlay planes(win_B & win_C & win_D)
-     *    CRTC 1: primary(win_A), overlay planes(win_B & win_C)
-     * TX2:
-     *    CRTC 0: primary(win_A), overlay planes(win_B & win_C)
-     *    CRTC 1: primary(win_A), overlay planes(win_B)
-     *    CRTC 2: primary(win_A)
-     * NOTE: The plane_count implies the overlay windows
-     */
+    plane_index = (int32_t*)malloc(plane_count * sizeof(int32_t));
+    if (plane_index && ctx->drm_renderer->getPlaneIndex(ctx->crtc, plane_index)) {
+        primary_plane_index = plane_index[0];
+        overlay_plane_index = plane_index[1];
+    }
 
-    if (plane_count == 3)
-        plane_index = (ctx->crtc == 0) ? 0 : 2;
-    else
-        plane_index = (ctx->crtc == 0) ? 0 : 3;
+    if (primary_plane_index == -1) {
+        /**
+         * It's kind of trick to distinguish the platforms with plane_count.
+         * We'd better decide target window with the real hardware configuration.
+         * By default,
+         * TX1:
+         *    CRTC 0: primary(win_A), overlay planes(win_B & win_C & win_D)
+         *    CRTC 1: primary(win_A), overlay planes(win_B & win_C)
+         * TX2:
+         *    CRTC 0: primary(win_A), overlay planes(win_B & win_C)
+         *    CRTC 1: primary(win_A), overlay planes(win_B)
+         *    CRTC 2: primary(win_A)
+         * NOTE: The plane_count implies the overlay windows
+         */
 
-    ctx->drm_renderer->setPlane(plane_index, ui_fb[0].fb_id,
+        if (plane_count == 3)
+            primary_plane_index = (ctx->crtc == 0) ? 0 : 2;
+        else
+            primary_plane_index = (ctx->crtc == 0) ? 0 : 3;
+    }
+
+    ctx->drm_renderer->setPlane(primary_plane_index, ui_fb[0].fb_id,
             0, 0, image_w, image_h,
             0, 0, image_w << 16, image_h << 16);
 
@@ -283,17 +293,19 @@ ui_render_loop_fcn(void *arg)
             }
         }
 
-        /**
-         * If plane_count is equal to 3, we don't have enough overlay to render
-         * moving color block on the second crtc.
-         */
-        if (plane_count == 3)
-            plane_index = (ctx->crtc == 0) ? 1 : INVALID_PLANE;
-        else
-            plane_index = (ctx->crtc == 0) ? 1 : 4;
+        if (overlay_plane_index == -1) {
+            /**
+             * If plane_count is equal to 3, we don't have enough overlay to render
+             * moving color block on the second crtc.
+             */
+            if (plane_count == 3)
+                overlay_plane_index = (ctx->crtc == 0) ? 1 : INVALID_PLANE;
+            else
+                overlay_plane_index = (ctx->crtc == 0) ? 1 : 4;
+        }
 
         /* The flip will be happening after vblank for the completed buffer */
-        ctx->drm_renderer->setPlane(plane_index, ui_fb[frame % 2 + 1].fb_id,
+        ctx->drm_renderer->setPlane(overlay_plane_index, ui_fb[frame % 2 + 1].fb_id,
                 frame % image_w, frame % image_h, ui_width, ui_height,
                 0, 0, ui_width << 16, ui_height << 16);
 
@@ -305,19 +317,11 @@ ui_render_loop_fcn(void *arg)
          */
         if (ctx->got_eos && ctx->got_exit)
         {
-            if (plane_count == 3)
-                plane_index = (ctx->crtc == 0) ? 0 : 2;
-            else
-                plane_index = (ctx->crtc == 0) ? 0 : 3;
-            ctx->drm_renderer->setPlane(plane_index, ZERO_FD,
+            ctx->drm_renderer->setPlane(primary_plane_index, ZERO_FD,
                     0, 0, image_w, image_h,
                     0, 0, image_w << 16, image_h << 16);
 
-            if (plane_count == 3)
-                plane_index = (ctx->crtc == 0) ? 1 : INVALID_PLANE;
-            else
-                plane_index = (ctx->crtc == 0) ? 1 : 4;
-            ctx->drm_renderer->setPlane(plane_index, ZERO_FD,
+            ctx->drm_renderer->setPlane(overlay_plane_index, ZERO_FD,
                     0, 0, image_w, image_h,
                     0, 0, image_w << 16, image_h << 16);
 
@@ -334,6 +338,9 @@ ui_render_loop_fcn(void *arg)
     /* Destroy the dumb framebuffers */
     for (uint32_t i = 0; i < 3; i++)
         ctx->drm_renderer->removeFB(ui_fb[i].fb_id);
+
+    if (plane_index)
+        free(plane_index);
 
     return NULL;
 }
@@ -777,7 +784,7 @@ dec_capture_loop_fcn(void *arg)
         }
     }
 
-    if (!ctx->disable_video)
+    if (!ctx->disable_video && ctx->drm_renderer)
         ctx->drm_renderer->enqueBuffer(-1);
 
     cout << "Exiting decoder capture loop thread" << endl;

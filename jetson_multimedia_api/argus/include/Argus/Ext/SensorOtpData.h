@@ -42,7 +42,7 @@ namespace Argus
 /**
  * Adds a OTP interface to get OTP data.
  * It introduces one new interface:
- *   - ISensorOtpData: used to get OTP data
+ *   - Ext::ISensorOtpData: gets OTP data.
  * @defgroup ArgusExtOtpData Ext::SensorOtpData
  * @ingroup ArgusExtensions
  */

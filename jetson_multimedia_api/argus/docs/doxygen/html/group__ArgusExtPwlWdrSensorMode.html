@@ -95,13 +95,13 @@ Classes</h2></td></tr>
 <p>Adds extra functionalities for the Piecewise Linear (PWL) Wide Dynamic <a class="el" href="classArgus_1_1Range.html" title="Range template class.">Range</a> (WDR) sensor mode type. </p>
 <p>It introduces one new interface:</p>
 <ul>
-<li>IPwlWdrSensorMode; returns a list of normalized float coordinates (x,y) that define the PWL compression curve used in the PWL WDR mode. This PWL compression curve is used by the sensor to compress WDR pixel values before sending them over CSI. This is done to save bandwidth for data transmission over VI-CSI. The compression converts the WDR pixel values from InputBitDepth space to OutputBitDepth space.The coordinates of the PWL compression curve can be un-normalized by scaling x-axis and y-axis values by InputBitDepth and OutputBitDepth respectively. The Bit depths can be obtained by using the respective methods in the <a class="el" href="classArgus_1_1ISensorMode.html" title="Interface to the core properties of a SensorMode.">ISensorMode</a> interface. <dl class="section see"><dt>See also:</dt><dd><a class="el" href="classArgus_1_1ISensorMode.html" title="Interface to the core properties of a SensorMode.">ISensorMode</a> </dd></dl>
+<li><a class="el" href="classArgus_1_1Ext_1_1IPwlWdrSensorMode.html" title="Interface to the properties of a PWL WDR device.">Ext::IPwlWdrSensorMode</a>; returns a list of normalized float coordinates (x,y) that define the PWL compression curve used in the PWL WDR mode. This PWL compression curve is used by the sensor to compress WDR pixel values before sending them over CSI. This is done to save bandwidth for data transmission over VI-CSI. The compression converts the WDR pixel values from InputBitDepth space to OutputBitDepth space.The coordinates of the PWL compression curve can be un-normalized by scaling x-axis and y-axis values by InputBitDepth and OutputBitDepth respectively. The Bit depths can be obtained by using the respective methods in the <a class="el" href="classArgus_1_1ISensorMode.html" title="Interface to the core properties of a SensorMode.">ISensorMode</a> interface. <dl class="section see"><dt>See also:</dt><dd><a class="el" href="classArgus_1_1ISensorMode.html" title="Interface to the core properties of a SensorMode.">ISensorMode</a> </dd></dl>
 </li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2020 22:10:56 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 9 2021 04:49:50 for Libargus API by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1
 </small></address>

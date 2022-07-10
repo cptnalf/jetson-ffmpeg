@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (c) 2016-2017, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2016-2021, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -44,7 +44,8 @@ OBJS += \
 	$(ALGO_CUDA_DIR)/NvCudaProc.o \
 	$(ALGO_TRT_DIR)/trt_inference.o
 
-LDFLAGS += -lopencv_objdetect
+LDFLAGS += -lopencv_objdetect \
+	-lnvinfer -lnvparsers -lnvonnxparser
 
 all: $(APP)
 

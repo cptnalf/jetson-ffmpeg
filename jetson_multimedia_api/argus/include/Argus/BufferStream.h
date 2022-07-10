@@ -71,7 +71,7 @@ namespace Argus
 
 /**
  * @ref ArgusOutputStream type that writes to application-managed Buffers.
- * @ingroup ArgusOutputStream ArgusOutputStreamSettings
+ * @ingroup ArgusOutputStreamSettings
  */
 DEFINE_UUID(StreamType, STREAM_TYPE_BUFFER, c723d960,5231,11e7,9598,18,00,20,0c,9a,66);
 
