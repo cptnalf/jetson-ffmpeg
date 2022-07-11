@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/l4t-base:r32.6.1 AS base
+FROM nvcr.io/nvidia/l4t-base:r32.7.1 AS base
 
 # ideas from
 # https://github.com/Metric-Void/jetson-ffmpeg-docker/blob/master/Dockerfile
@@ -11,7 +11,8 @@ WORKDIR     /tmp/workdir
 
 ENV     DEBIAN_FRONTEND=noninteractive
 RUN     apt-get -yqq update && \
-        apt-get install -yq --no-install-recommends ca-certificates expat libgomp1 xutils-dev && \
+        apt-get install -yq --no-install-recommends \
+        ca-certificates expat libgomp1 xutils-dev && \
         apt-get autoremove -y && \
         apt-get clean -y
 
@@ -56,11 +57,10 @@ ARG         XVID_SHA256SUM="4e9fd62728885855bc5007fe1be58df42e5e274497591fec3724
 ARG         LIBZMQ_SHA256SUM="02ecc88466ae38cf2c8d79f09cfd2675ba299a439680b64ade733e26a349edeb v4.3.2.tar.gz"
 
 
-ARG         LD_LIBRARY_PATH=/opt/ffmpeg/lib
-ARG         MAKEFLAGS="-j2"
+ARG         MAKEFLAGS="-j3"
 ARG         PKG_CONFIG_PATH="/opt/ffmpeg/share/pkgconfig:/opt/ffmpeg/lib/pkgconfig:/opt/ffmpeg/lib64/pkgconfig"
 ARG         PREFIX=/opt/ffmpeg
-ARG         LD_LIBRARY_PATH="/opt/ffmpeg/lib:/opt/ffmpeg/lib64:/usr/lib64:/usr/lib:/lib64:/lib"
+ENV         LD_LIBRARY_PATH="/opt/ffmpeg/lib:/opt/ffmpeg/lib64:/usr/lib/aarch64-linux-gnu/tegra:/usr/local/lib/aarch64-linux-gnu:/usr/lib:/usr/lib/aarch64-linux-gnu:/lib/aarch64-lib-gnu:/usr/local/cuda-10.2/targets/aarch64-linux/lib"
 
 RUN     buildDeps="autoconf \
         automake \
@@ -79,12 +79,14 @@ RUN     buildDeps="autoconf \
         pkg-config \
         python \
         libssl-dev \
+	meson ninja-build \
         yasm \
         linux-headers-raspi2 \
         libomxil-bellagio-dev \
         zlib1g-dev" && \
         apt-get -yqq update && \
         apt-get install -yq --no-install-recommends ${buildDeps}
+
 ## opencore-amr https://sourceforge.net/projects/opencore-amr/
 RUN \
         DIR=/tmp/opencore-amr && \
@@ -96,6 +98,7 @@ RUN \
         make -j $(nproc) && \
         make -j $(nproc) install && \
         rm -rf ${DIR}
+
 ## x264 http://www.videolan.org/developers/x264.html
 RUN \
         DIR=/tmp/x264 && \
@@ -107,6 +110,7 @@ RUN \
         make -j $(nproc) && \
         make -j $(nproc) install && \
         rm -rf ${DIR}
+
 ### x265 http://x265.org/
 RUN \
         DIR=/tmp/x265 && \
@@ -121,6 +125,7 @@ RUN \
         ./multilib.sh && \
         make -C 8bit install && \
         rm -rf ${DIR}
+
 ### libogg https://www.xiph.org/ogg/
 RUN \
         DIR=/tmp/ogg && \
@@ -133,6 +138,7 @@ RUN \
         make -j $(nproc) && \
         make -j $(nproc) install && \
         rm -rf ${DIR}
+
 ### libopus https://www.opus-codec.org/
 RUN \
         DIR=/tmp/opus && \
@@ -393,15 +399,22 @@ RUN \
         make -j $(nproc) install && \
         rm -rf ${DIR}
 
-
+# mpp for rock-chip. libdrm->rockchip isn't accessible anymore.
+# 2.4.106 is the last version which compiles with < 0.46 of meson.
+#  ubuntu 18 includes 0.45, which is what jetpack/nvidia containers have.
+	#&& git clone https://github.com/rockchip-linux/libdrm-rockchip \
 RUN \
         DIR=/tmp/rkmpp && \
         mkdir -p ${DIR} && \
-        cd ${DIR} && \
-        git clone https://github.com/rockchip-linux/libdrm-rockchip && git clone https://github.com/rockchip-linux/mpp && \
-        cd libdrm-rockchip && bash autogen.sh && ./configure && make && make install && \
-        cd ../mpp && cmake -DRKPLATFORM=ON -DHAVE_DRM=ON && make -j6 && make install && \
-        rm -rf ${DIR}
+        cd ${DIR} \
+	&& git clone -b libdrm-2.4.106 https://gitlab.freedesktop.org/mesa/drm.git \
+	&& git clone https://github.com/rockchip-linux/mpp && \
+        cd drm \
+	&& mkdir builddir/ \
+	&& meson builddir/ \
+	&& ninja -C builddir/ install \
+	#&& cd ../mpp && cmake -DRKPLATFORM=ON -DHAVE_DRM=ON && make -j6 && make install && \
+        && cd / && rm -rf ${DIR}
 
 ## ffmpeg https://ffmpeg.org/
 RUN  \
@@ -409,6 +422,7 @@ RUN  \
         curl -sLO https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.bz2 && \
         tar -jx --strip-components=1 -f ffmpeg-${FFMPEG_VERSION}.tar.bz2
 
+# jetson decoder api.
 RUN     mkdir -p /tmp/nvmpi_parts && mkdir -p /usr/src
 
 COPY . /build/
@@ -465,7 +479,7 @@ RUN \
         --enable-libkvazaar \
         --enable-libaom \
         --extra-libs=-lpthread \
-        --enable-rkmpp \
+        #--enable-rkmpp \
         --enable-libdrm \
         # --enable-omx \
         # --enable-omx-rpi \
@@ -499,7 +513,9 @@ RUN \
 
 FROM        base AS release
 
-ENV         LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:/lib:/lib64
+ENV         LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/aarch64-linux-gnu/tegra:/usr/local/lib/aarch64-linux-gnu:/usr/lib:/usr/lib/aarch64-linux-gnu:/lib:/lib/aarch64-lib-gnu:/usr/local/cuda-10.2/targets/aarch64-linux/lib
+
+#/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:/lib:/lib64
 
 CMD         ["--help"]
 ENTRYPOINT  ["ffmpeg"]
