@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/l4t-base:r32.7.1 AS base
+FROM cptnalf/ubuntu-l4t:focal-r32.7.1 AS base
 
 # ideas from
 # https://github.com/Metric-Void/jetson-ffmpeg-docker/blob/master/Dockerfile
@@ -20,7 +20,7 @@ FROM base as build
 
 ARG     FFMPEG_VERSION=4.3.2
 ENV     AOM_VERSION=v1.0.0 \
-        FDKAAC_VERSION=0.1.5 \
+        FDKAAC_VERSION=2.0.1 \
         FREETYPE_VERSION=2.11.0 \
         FRIBIDI_VERSION=0.19.7 \
         KVAZAAR_VERSION=1.2.0 \
@@ -35,7 +35,7 @@ ENV     AOM_VERSION=v1.0.0 \
         OPENJPEG_VERSION=2.1.2 \
         THEORA_VERSION=1.1.1 \
         VORBIS_VERSION=1.3.5 \
-        VPX_VERSION=1.8.0 \
+        VPX_VERSION=1.11.0 \
         WEBP_VERSION=1.0.2 \
         X264_VERSION=20170226-2245-stable \
         X265_VERSION=3.1.1 \
@@ -83,7 +83,10 @@ RUN     buildDeps="autoconf \
         yasm \
         linux-headers-raspi2 \
         libomxil-bellagio-dev \
-        zlib1g-dev" && \
+        zlib1g-dev \
+        libegl1 \
+        libglvnd0 \
+        " && \
         apt-get -yqq update && \
         apt-get install -yq --no-install-recommends ${buildDeps}
 
@@ -100,11 +103,12 @@ RUN \
         rm -rf ${DIR}
 
 ## x264 http://www.videolan.org/developers/x264.html
+# https://code.videolan.org/videolan/x264/-/archive/stable/x264-stable.tar.bz2
 RUN \
         DIR=/tmp/x264 && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
-        curl -sL https://download.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-${X264_VERSION}.tar.bz2 | \
+        curl -sL https://code.videolan.org/videolan/x264/-/archive/stable/x264-stable.tar.bz2 | \
         tar -jx --strip-components=1 && \
         ./configure --prefix="${PREFIX}" --enable-shared --enable-pic --disable-cli && \
         make -j $(nproc) && \
@@ -112,13 +116,14 @@ RUN \
         rm -rf ${DIR}
 
 ### x265 http://x265.org/
+# https://bitbucket.org/multicoreware/x265_git/get/stable.tar.bz2
 RUN \
         DIR=/tmp/x265 && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
-        curl -sL https://download.videolan.org/pub/videolan/x265/x265_${X265_VERSION}.tar.gz  | \
-        tar -zx && \
-        cd x265_${X265_VERSION}/build/linux && \
+        curl -sL https://bitbucket.org/multicoreware/x265_git/downloads/x265_3.1.1.tar.gz | \
+        tar -zx --strip-components=1 && \
+        cd build/linux && \
         sed -i "/-DEXTRA_LIB/ s/$/ -DCMAKE_INSTALL_PREFIX=\${PREFIX}/" multilib.sh && \
         sed -i "/^cmake/ s/$/ -DENABLE_CLI=OFF/" multilib.sh && \
         export CXXFLAGS="${CXXFLAGS} -fPIC" && \
@@ -430,6 +435,7 @@ RUN     cd /tmp/nvmpi_parts/ && \
         mv /build/jetson_multimedia_api /usr/src/ && \
         mv /build/nvmpi_parts/* /tmp/nvmpi_parts/ && \
         mv /build/ffmpeg_nvmpi.patch /tmp/ffmpeg/ && \
+        mv /build/tegra-lib/ /usr/lib/aarch64-linux-gnu/tegra && \
         mkdir build && \
         cd /tmp/nvmpi_parts/build && \
         cmake -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}" .. && \
@@ -498,13 +504,15 @@ RUN \
         make qt-faststart && cp qt-faststart ${PREFIX}/bin/
 
 ## cleanup
+# we can't run ffmpeg in this container as it doesn't have nvidia stuffs available.
+# we'll have to wait until after it's in another container to run it and test.
 RUN \
         cp ${PREFIX}/lib/*.so.* /usr/local/lib/ && \
         ldd ${PREFIX}/bin/ffmpeg | grep opt/ffmpeg | cut -d ' ' -f 3 | xargs -i cp {} /usr/local/lib/ && \
         for lib in /usr/local/lib/*.so.*; do ln -sf "${lib##*/}" "${lib%%.so.*}".so; done && \
         cp ${PREFIX}/bin/* /usr/local/bin/ && \
         cp -r ${PREFIX}/share/ffmpeg /usr/local/share/ && \
-        LD_LIBRARY_PATH=/usr/local/lib ffmpeg -buildconf && \
+#        LD_LIBRARY_PATH=/usr/local/lib ffmpeg -buildconf && \
         cp -r ${PREFIX}/include/libav* ${PREFIX}/include/libpostproc ${PREFIX}/include/libsw* /usr/local/include && \
         mkdir -p /usr/local/lib/pkgconfig && \
         for pc in ${PREFIX}/lib/pkgconfig/libav*.pc ${PREFIX}/lib/pkgconfig/libpostproc.pc ${PREFIX}/lib/pkgconfig/libsw*.pc; do \
@@ -513,8 +521,9 @@ RUN \
 
 FROM        base AS release
 
-ENV         LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/aarch64-linux-gnu/tegra:/usr/local/lib/aarch64-linux-gnu:/usr/lib:/usr/lib/aarch64-linux-gnu:/lib:/lib/aarch64-lib-gnu:/usr/local/cuda-10.2/targets/aarch64-linux/lib
-
+ENV         LD_LIBRARY_PATH=/usr/local/lib
+# only include libs we add. nvidia-runtime will add the other directories to ldconf spots for us.
+#:/usr/lib/aarch64-linux-gnu/tegra:/usr/local/lib/aarch64-linux-gnu:/usr/lib:/usr/lib/aarch64-linux-gnu:/lib:/lib/aarch64-lib-gnu:/usr/local/cuda-10.2/targets/aarch64-linux/lib
 #/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:/lib:/lib64
 
 CMD         ["--help"]
